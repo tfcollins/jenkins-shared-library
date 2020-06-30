@@ -1,5 +1,5 @@
 
-deff call(java.util.ArrayList listOfResources){
+def call(java.util.ArrayList listOfResources){
 
   //assert listOfResources instanceof java.util.List
 
