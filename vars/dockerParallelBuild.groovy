@@ -28,7 +28,7 @@ buildParallelWithDocker(branches2, dockerArgs2){
 }
 */
 
-def call(branchNames, dockerHost, dockerArgs, dockerstages){
+def call(branchNames, dockerHost, dockerArgs, dockerstages(branchName)){
 
   def tests = [:]
   //def dockerHost = 'ubuntu-vm'
