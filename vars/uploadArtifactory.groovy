@@ -2,11 +2,12 @@ def call(project, filepattern) {
 
   //def server = Artifactory.newServer url: SERVER_URL, credentialsId: CREDENTIALS
 
+  root = 'sdg-generic-development/'
   if (project == 'hdl') {
-    target = 'hdl'
+    target = root+'hdl'
   }
   else if (project == 'TransceiverToolbox') {
-    target = 'TransceiverToolbox'
+    target = root+'TransceiverToolbox'
   }
   
   
@@ -20,9 +21,18 @@ def call(project, filepattern) {
   }"""
   
   echo uploadSpec
+  /*
+  // Collect meta
+  buildInfo = Artifactory.newBuildInfo()
   
   // Do the upload Pew pew
-  //server.upload spec: uploadSpec
+  def buildInfoUL = server.upload spec: uploadSpec
 
+  // Merge the upload and build-info objects.
+  buildInfo.append buildInfoUL
 
+  // Publish the build to Artifactory
+  server.publishBuildInfo buildInfo
+  */
+  
 }
