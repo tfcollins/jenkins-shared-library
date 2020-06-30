@@ -28,7 +28,7 @@ buildParallelWithDocker(branches2, dockerArgs2){
 }
 */
 
-def call(branches, dockerArgs, dockerstages){
+def call(branches, permuted, dockerArgs, dockerstages){
 
   def tests = [:]
   def dockerHost = 'ubuntu-vm'
@@ -38,8 +38,9 @@ def call(branches, dockerArgs, dockerstages){
 
   for ( i=0; i<branches.size(); i++ ) {
 
-      def branch = branches[i]
+      def branchName = branches[i]
       //def dockerENVS = ["-e HDLBRANCH=${hdlBranch}","-e MLRELEASE=${MATLABRelease}","-e BOARD=${boardName}"]
+      //def permuted
 
       tests[branch] = {
           node (label: dockerHost) {
