@@ -48,7 +48,7 @@ def call(branchNames, dockerHost, dockerArgs, dockerstages){
 
               stage (branchName) {
                   docker.image('tfcollins/hdl-ci:latest').inside(dockerArgs) {
-                    dockerstages()
+                    dockerstages(branchName)
                   }
                   cleanWs()
               }
