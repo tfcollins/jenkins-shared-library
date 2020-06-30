@@ -43,10 +43,10 @@ def call(branchNames, dockerHost, dockerArgs, dockerstages){
       //def dockerENVS = ["-e HDLBRANCH=${hdlBranch}","-e MLRELEASE=${MATLABRelease}","-e BOARD=${boardName}"]
       //def permuted
 
-      tests[branch] = {
+      tests[branchName] = {
           node (label: dockerHost) {
 
-              stage (branch) {
+              stage (branchName) {
                   docker.image('tfcollins/hdl-ci:latest').inside(dockerArgs) {
                     dockerstages()
                   }
