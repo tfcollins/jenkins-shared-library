@@ -1,11 +1,12 @@
 
 def call(java.util.ArrayList listOfResources){
 
-  //assert listOfResources instanceof java.util.List
+  assert listOfResources instanceof java.util.List
 
   args = ['--privileged']
 
   for (i = 0; i<listOfResources.size(); i++) {
+    echo "${listOfResources[i]}"
 
     if (listOfResources[i] == 'MATLAB') {
         args.add('-v "/nfs/apps/MATLAB":"/usr/local/MATLAB":ro')
