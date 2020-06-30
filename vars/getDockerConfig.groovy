@@ -1,7 +1,7 @@
 
 call(listOfResources){
 
-  assert listOfResources instanceof java.util.List
+  //assert listOfResources instanceof java.util.List
 
   args = ['--privileged']
 
