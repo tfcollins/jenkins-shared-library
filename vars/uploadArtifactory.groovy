@@ -1,6 +1,6 @@
 def call(project, filepattern) {
-
-  //def server = Artifactory.newServer url: SERVER_URL, credentialsId: CREDENTIALS
+  
+  def server = Artifactory.server "nuc-docker"
 
   root = 'sdg-generic-development/'
   if (project == 'hdl') {
@@ -21,7 +21,11 @@ def call(project, filepattern) {
   }"""
   
   echo uploadSpec
-  /*
+  
+  
+  //server.setProps spec: setPropsSpec, props: “p1=v1;p2=v2”, failNoOp: true
+  
+  
   // Collect meta
   buildInfo = Artifactory.newBuildInfo()
   
@@ -33,6 +37,6 @@ def call(project, filepattern) {
 
   // Publish the build to Artifactory
   server.publishBuildInfo buildInfo
-  */
+  
   
 }
