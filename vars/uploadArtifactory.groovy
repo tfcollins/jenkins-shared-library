@@ -1,4 +1,4 @@
-def call(project, filepattern) {
+def call(project, targetname, filepattern) {
   
   def server = Artifactory.server "nuc-docker"
 
@@ -9,6 +9,7 @@ def call(project, filepattern) {
   else if (project == 'TransceiverToolbox') {
     target = root+'TransceiverToolbox'
   }
+  target = target+"/"+targetname
   
   
   def uploadSpec = """{
