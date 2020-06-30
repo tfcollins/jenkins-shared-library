@@ -32,6 +32,9 @@ def call(branches, dockerArgs, dockerstages){
 
   def tests = [:]
   def dockerHost = 'ubuntu-vm'
+  if (dockerArgs instanceof List) {
+      dockerArgs = dockerArgs.join(" ")
+  }
 
   for ( i=0; i<branches.size(); i++ ) {
 
