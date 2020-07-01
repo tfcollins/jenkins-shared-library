@@ -32,7 +32,7 @@ def call(project, branch, targetname, filepattern) {
   echo '-------------------'
   println(env['GIT_BRANCH'])
   echo '-------------------'
-  branchname = $(git rev-parse --abbrev-ref HEAD)
+  def branchname = sh(script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true)
   println(branchname)
   echo '-------------------'
   
