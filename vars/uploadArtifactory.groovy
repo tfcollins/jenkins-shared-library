@@ -1,4 +1,3 @@
-@NonCPS
 def call(project, branch, targetname, filepattern) {
   
   def server = Artifactory.server "nuc-docker"
@@ -35,7 +34,8 @@ def call(project, branch, targetname, filepattern) {
   echo '-------------------'
   println(env['BRANCH_NAME'])
   echo '-----getEnvironment--------'
-
+  def ret = sh(script: 'uname', returnStdout: true)
+  println ret
   echo '-----printenv-------'
   sh 'printenv'
   echo '-----post-printenv-----'
