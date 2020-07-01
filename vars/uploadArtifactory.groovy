@@ -32,6 +32,10 @@ def call(project, branch, targetname, filepattern) {
   echo '-------------------'
   println(env['GIT_BRANCH'])
   echo '-------------------'
+  branchname = $(git rev-parse --abbrev-ref HEAD)
+  println(branchname)
+  echo '-------------------'
+  
   
   def thr = Thread.currentThread()
   def build = thr?.executable
