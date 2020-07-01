@@ -33,9 +33,9 @@ def call(project, branch, targetname, filepattern) {
   echo envVarsMap
   echo '-------------------'
   
-  git_branch_local=$(echo $GIT_BRANCH   | sed -e "s|origin/||g")
+  //git_branch_local=$(echo $GIT_BRANCH   | sed -e "s|origin/||g")
   echo '-------------------'
-  echo $git_branch_local
+  //echo $git_branch_local
   echo '-------------------'
   echo ${GIT_BRANCH#*/}
   echo '-------------------'
