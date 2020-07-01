@@ -39,10 +39,11 @@ def call(project, branch, targetname, filepattern) {
   sh 'printenv'
   echo '-----post-printenv-----'
   def env2 = System.getenv()
+  println(env2)
   //Print all the environment variables.
-  env2.each{
-    println it
-  }
+  //env2.each{
+  //  println it
+  //}
   
   def uploadSpec = """{
     "files": [
