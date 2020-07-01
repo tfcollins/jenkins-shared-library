@@ -1,3 +1,4 @@
+@NonCPS
 def call(project, branch, targetname, filepattern) {
   
   def server = Artifactory.server "nuc-docker"
