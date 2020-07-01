@@ -27,6 +27,7 @@ def call(project, branch, targetname, filepattern) {
   echo '-------------------'
   def env = System.getenv()
   println(env['JENKINS_HOME'])
+  println(env)
   echo '-------------------'
   println(env['JOB_NAME'])
   echo '-------------------'
@@ -34,7 +35,7 @@ def call(project, branch, targetname, filepattern) {
   echo '-----printenv-------'
   sh 'printenv'
   echo '-------------------'
-  echo ${BRANCH_NAME}  
+  echo "${BRANCH_NAME}"
   echo '-------------------'
   //echo ${GIT_BRANCH#*/}
   echo '-------------------'
