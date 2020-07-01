@@ -30,9 +30,11 @@ def call(project, branch, targetname, filepattern) {
   echo '-------------------'
   println(env['JOB_NAME'])
   echo '-------------------'
-  println(env['GIT_BRANCH'])
+  println(env['BRANCH_NAME'])
   echo '-----printenv-------'
   sh 'printenv'
+  echo '-------------------'
+  echo $BRANCH_NAME
   echo '-------------------'
   
   def command = 'git rev-parse --abbrev-ref HEAD'
