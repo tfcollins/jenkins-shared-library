@@ -24,8 +24,6 @@ def call(project, branch, targetname, filepattern) {
   
   echo branch
   echo '-------------------'
-  echo envn
-  echo '-------------------'
   echo env.JOB_NAME
   echo '-------------------'
   def env = System.getenv()
