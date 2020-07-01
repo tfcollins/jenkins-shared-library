@@ -25,13 +25,9 @@ def call(project, branch, targetname, filepattern) {
   echo branch
   echo '-------------------'
   echo env.JOB_NAME
-  echo '-------------------'
-  //def env = System.getenv()
-  //println(env['JENKINS_HOME'])
-  //println(env)
-  echo '-------------------'
+  echo '-----JOB_NAME------'
   println(env['JOB_NAME'])
-  echo '-------------------'
+  echo '----BRANCH_NAME-----'
   println(env['BRANCH_NAME'])
   echo '-----getEnvironment--------'
   def gitCommit = shellout('printenv BRANCH_NAME')
@@ -77,15 +73,7 @@ def shellout(command) {
 
   println "Process exit code: ${proc.exitValue()}"
   println "Std Err: ${proc.err.text}"
-  //println "Std Out: ${proc.in.text}"
   def val = proc.in.text
   
   return val
-}
-
-@NonCPS
-def shellout2(command) {
-  def out = sh(returnStdout: true, script: command).trim()
-  println out
-  return out
 }
