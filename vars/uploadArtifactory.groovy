@@ -34,6 +34,7 @@ def call(project, targetname, filepattern) {
   
   echo '-------------------'
   println(env)
+  println(env.GIT_COMMIT)
  
   def uploadSpec = """{
     "files": [
