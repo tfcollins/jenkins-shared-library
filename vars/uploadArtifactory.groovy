@@ -32,7 +32,6 @@ def call(project, targetname, filepattern) {
   // release
   //  TransceiverToolbox/release/trx-toolbox-tag
   
-  echo branch
   echo '-------------------'
   println(env)
  
