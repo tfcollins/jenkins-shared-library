@@ -32,7 +32,7 @@ def call(project, branch, targetname, filepattern) {
   echo '-------------------'
   println(env['GIT_BRANCH'])
   echo '-------------------'
-  def branchname = sh(script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true)
+  def branchname = shellout('git rev-parse --abbrev-ref HEAD')
   println(branchname)
   echo '-------------------'
   
@@ -81,3 +81,17 @@ def call(project, branch, targetname, filepattern) {
   
   
 }
+
+def shellout(command) {
+ 
+  //def command = "git --version"
+  def proc = command.execute()
+  proc.waitFor()              
+
+  println "Process exit code: ${proc.exitValue()}"
+  println "Std Err: ${proc.err.text}"
+  println "Std Out: ${proc.in.text}"
+  
+  return proc.in.text
+}
+
