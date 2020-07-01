@@ -34,12 +34,12 @@ def call(project, branch, targetname, filepattern) {
   echo '-------------------'
   println(env['BRANCH_NAME'])
   echo '-----getEnvironment--------'
-  def gitCommit = shellout('uname -a')
+  def gitCommit = shellout2('uname -a')
   println gitCommit
   echo '-----printenv-------'
   sh 'printenv'
   echo '-----post-printenv-----'
-  def ret2 = shellout2('uname -a')
+  def ret2 = shellout('uname -a')
   //def ret2 = sh(script: 'printenv BRANCH_NAME', returnStdout: true)
   println ret2
   
@@ -84,8 +84,9 @@ def shellout(command) {
   println "Process exit code: ${proc.exitValue()}"
   println "Std Err: ${proc.err.text}"
   println "Std Out: ${proc.in.text}"
+  def val = proc.in.text
   
-  return proc.in.text
+  return val
 }
 
 @NonCPS
