@@ -88,7 +88,7 @@ def shellout(command) {
   return proc.in.text
 }
 
-@NonCP
+@NonCPS
 def shellout2(command) {
   def out = sh(returnStdout: true, script: command).trim()
   println out
