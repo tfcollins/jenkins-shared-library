@@ -1,4 +1,4 @@
-def call(project, branch, targetname, filepattern, envn=env) {
+def call(project, branch, targetname, filepattern) {
   
   def server = Artifactory.server "nuc-docker"
 
@@ -35,6 +35,9 @@ def call(project, branch, targetname, filepattern, envn=env) {
   println(env['JOB_NAME'])
   echo '-------------------'
   println(env['BRANCH_NAME'])
+  echo '-----getEnvironment--------'
+  def myVar = build.getEnvironment(listener).get('BRANCH_NAME')
+  println(myVar) 
   echo '-----printenv-------'
   sh 'printenv'
   echo '-------------------'
