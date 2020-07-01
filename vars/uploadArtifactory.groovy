@@ -28,6 +28,10 @@ def call(project, branch, targetname, filepattern) {
   def env = System.getenv()
   println(env['JENKINS_HOME'])
   echo '-------------------'
+  println(env['JOB_NAME'])
+  echo '-------------------'
+  println(env['GIT_BRANCH'])
+  echo '-------------------'
   
   def thr = Thread.currentThread()
   def build = thr?.executable
