@@ -1,4 +1,4 @@
-def call(project, branch, targetname, filepattern) {
+def call(project, targetname, filepattern) {
   
   def server = Artifactory.server "nuc-docker"
 
@@ -8,7 +8,17 @@ def call(project, branch, targetname, filepattern) {
   }
   else if (project == 'TransceiverToolbox') {
     target = root+'TransceiverToolbox'
+    
+    if (env.BRANCH_NAME == 'master') {
+      target = target+"/master"
+    }
+    else {
+      target = target+"/dev/"+env.BRANCH_NAME
+    }
+    
   }
+  
+  
   target = target+"/"+targetname
   
   // Example layout
@@ -24,15 +34,8 @@ def call(project, branch, targetname, filepattern) {
   
   echo branch
   echo '-------------------'
-  echo env.JOB_NAME
-  echo '-----JOB_NAME------'
-  println(env['JOB_NAME'])
-  echo '----BRANCH_NAME-----'
-  println(env['BRANCH_NAME'])
-  echo '-----getEnvironment--------'
-  def gitCommit = shellout('printenv BRANCH_NAME')
-  println gitCommit
-  
+  println(env)
+ 
   def uploadSpec = """{
     "files": [
       {
