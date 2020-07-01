@@ -31,6 +31,8 @@ def call(project, branch, targetname, filepattern) {
   println(env['JOB_NAME'])
   echo '-------------------'
   println(env['GIT_BRANCH'])
+  echo '-----printenv-------'
+  sh 'printenv'
   echo '-------------------'
   
   def command = 'git rev-parse --abbrev-ref HEAD'
