@@ -2,10 +2,6 @@
 def call(java.util.ArrayList listOfResources, UseNFS=false){
 
   assert listOfResources instanceof java.util.List
-  
-  def env = System.getenv()
-  println(env['JENKINS_HOME'])
-  println(env)
 
   args = ['--privileged']
 
