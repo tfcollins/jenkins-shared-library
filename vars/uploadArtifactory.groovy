@@ -34,33 +34,7 @@ def call(project, branch, targetname, filepattern) {
   echo '-----printenv-------'
   sh 'printenv'
   echo '-------------------'
-  echo $BRANCH_NAME
-  echo '-------------------'
-  
-  def command = 'git rev-parse --abbrev-ref HEAD'
-  def proc = command.execute()
-  proc.waitFor()              
-
-  println "Process exit code: ${proc.exitValue()}"
-  println "Std Err: ${proc.err.text}"
-  println "Std Out: ${proc.in.text}"
-  
-  echo '-------------------'
-  def branchname = shellout('git rev-parse --abbrev-ref HEAD')
-  println(branchname)
-  echo '-------------------'
-  
-  
-  def thr = Thread.currentThread()
-  def build = thr?.executable
-  def envVarsMap = build.parent.builds[0].properties.get("JOB_NAME")
-  echo '-------------------'
-  echo envVarsMap
-  echo '-------------------'
-  
-  //git_branch_local=$(echo $GIT_BRANCH   | sed -e "s|origin/||g")
-  echo '-------------------'
-  //echo $git_branch_local
+  echo ${BRANCH_NAME}  
   echo '-------------------'
   //echo ${GIT_BRANCH#*/}
   echo '-------------------'
