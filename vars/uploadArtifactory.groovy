@@ -26,22 +26,16 @@ def call(project, branch, targetname, filepattern) {
   echo '-------------------'
   echo env.JOB_NAME
   echo '-------------------'
-  def env = System.getenv()
-  println(env['JENKINS_HOME'])
-  println(env)
+  //def env = System.getenv()
+  //println(env['JENKINS_HOME'])
+  //println(env)
   echo '-------------------'
   println(env['JOB_NAME'])
   echo '-------------------'
   println(env['BRANCH_NAME'])
   echo '-----getEnvironment--------'
-  def gitCommit = shellout('uname -a')
+  def gitCommit = shellout('printenv BRANCH_NAME')
   println gitCommit
-  echo '-----printenv-------'
-  sh 'printenv'
-  echo '-----post-printenv-----'
-  def ret2 = shellout2('uname -a')
-  //def ret2 = sh(script: 'printenv BRANCH_NAME', returnStdout: true)
-  println ret2
   
   def uploadSpec = """{
     "files": [
