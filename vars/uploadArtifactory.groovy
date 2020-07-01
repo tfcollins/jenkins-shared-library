@@ -83,7 +83,7 @@ def shellout(command) {
 
   println "Process exit code: ${proc.exitValue()}"
   println "Std Err: ${proc.err.text}"
-  println "Std Out: ${proc.in.text}"
+  //println "Std Out: ${proc.in.text}"
   def val = proc.in.text
   
   return val
