@@ -37,7 +37,7 @@ def call(project, branch, targetname, filepattern) {
   echo '-------------------'
   //echo $git_branch_local
   echo '-------------------'
-  echo ${GIT_BRANCH#*/}
+  //echo ${GIT_BRANCH#*/}
   echo '-------------------'
   
   def uploadSpec = """{
