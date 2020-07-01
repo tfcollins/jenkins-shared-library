@@ -25,6 +25,9 @@ def call(project, branch, targetname, filepattern) {
   echo '-------------------'
   echo env.JOB_NAME
   echo '-------------------'
+  def env = System.getenv()
+  println(env['JENKINS_HOME'])
+  echo '-------------------'
   
   def thr = Thread.currentThread()
   def build = thr?.executable
