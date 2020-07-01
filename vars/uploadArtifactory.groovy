@@ -22,6 +22,7 @@ def call(project, branch, targetname, filepattern) {
   // release
   //  TransceiverToolbox/release/trx-toolbox-tag
   
+  echo branch
   echo '-------------------'
   echo env.JOB_NAME
   echo '-------------------'
