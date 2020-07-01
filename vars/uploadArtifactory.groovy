@@ -34,8 +34,8 @@ def call(project, branch, targetname, filepattern) {
   echo '-------------------'
   println(env['BRANCH_NAME'])
   echo '-----getEnvironment--------'
-  def ret = sh(script: 'uname', returnStdout: true)
-  println ret
+  def gitCommit = sh(returnStdout: true, script: 'uname -a').trim()
+  println gitCommit
   echo '-----printenv-------'
   sh 'printenv'
   echo '-----post-printenv-----'
