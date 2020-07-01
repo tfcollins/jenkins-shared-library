@@ -22,7 +22,7 @@ def call(project, branch, targetname, filepattern) {
   // release
   //  TransceiverToolbox/release/trx-toolbox-tag
   
-  echo "BRANCH ${GIT_BRANCH##origin/}"
+  echo "BRANCH ${GIT_BRANCH#*/}"
   
   def uploadSpec = """{
     "files": [
