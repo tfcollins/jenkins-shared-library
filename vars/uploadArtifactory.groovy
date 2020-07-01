@@ -1,4 +1,4 @@
-def call(project, branch, targetname, filepattern) {
+def call(project, branch, targetname, filepattern, envn=env) {
   
   def server = Artifactory.server "nuc-docker"
 
@@ -23,6 +23,8 @@ def call(project, branch, targetname, filepattern) {
   //  TransceiverToolbox/release/trx-toolbox-tag
   
   echo branch
+  echo '-------------------'
+  echo envn
   echo '-------------------'
   echo env.JOB_NAME
   echo '-------------------'
