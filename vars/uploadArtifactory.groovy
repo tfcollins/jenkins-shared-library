@@ -22,6 +22,7 @@ def call(project, branch, targetname, filepattern) {
   // release
   //  TransceiverToolbox/release/trx-toolbox-tag
   
+  println env.JOB_NAME
   git_branch_local=$(echo $GIT_BRANCH   | sed -e "s|origin/||g")
   echo $git_branch_local
   echo ${GIT_BRANCH#*/}
