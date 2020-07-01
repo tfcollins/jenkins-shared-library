@@ -34,17 +34,10 @@ def call(project, branch, targetname, filepattern) {
   echo '-------------------'
   println(env['BRANCH_NAME'])
   echo '-----getEnvironment--------'
-  
-  def build = this.getProperty('binding').getVariable('build')
-  def listener = this.getProperty('binding').getVariable('listener')
-  def env2 = build.getEnvironment(listener)
-  println env2.BRANCH_NAME
-  
-  def myVar = build.getEnvironment(listener).get('BRANCH_NAME')
-  println(myVar) 
+
   echo '-----printenv-------'
   sh 'printenv'
-  echo '-------------------'
+  echo '-----post-printenv-----'
   echo "${BRANCH_NAME}"
   echo '-------------------'
   //echo ${GIT_BRANCH#*/}
