@@ -37,8 +37,8 @@ def call(project, branch, targetname, filepattern) {
   
   def build = this.getProperty('binding').getVariable('build')
   def listener = this.getProperty('binding').getVariable('listener')
-  def env = build.getEnvironment(listener)
-  println env.BRANCH_NAME
+  def env2 = build.getEnvironment(listener)
+  println env2.BRANCH_NAME
   
   def myVar = build.getEnvironment(listener).get('BRANCH_NAME')
   println(myVar) 
