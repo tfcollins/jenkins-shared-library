@@ -1,4 +1,4 @@
-def call(project, targetname, filepattern) {
+def call(project, branch, targetname, filepattern) {
   
   def server = Artifactory.server "nuc-docker"
 
@@ -11,6 +11,18 @@ def call(project, targetname, filepattern) {
   }
   target = target+"/"+targetname
   
+  // Example layout
+  // master
+  //  TransceiverToolbox/master/trx-toolbox-hash
+  //  Last 4 kept for master
+  // others
+  //  TransceiverToolbox/dev/branch/trx-toolbox-hash
+  //  Last 2 kept
+  //  Folder deleted when merged into master after 7 days
+  // release
+  //  TransceiverToolbox/release/trx-toolbox-tag
+  
+  echo "BRANCH ${GIT_BRANCH##origin/}"
   
   def uploadSpec = """{
     "files": [
@@ -21,6 +33,7 @@ def call(project, targetname, filepattern) {
    ]
   }"""
   
+  echo "-----Artifactory Upload Spec-----"
   echo uploadSpec
   
   
