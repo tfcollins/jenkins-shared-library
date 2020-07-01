@@ -34,12 +34,13 @@ def call(project, branch, targetname, filepattern) {
   echo '-------------------'
   println(env['BRANCH_NAME'])
   echo '-----getEnvironment--------'
-  def gitCommit = sh(returnStdout: true, script: 'uname -a').trim()
+  def gitCommit = shellout('uname -a')
   println gitCommit
   echo '-----printenv-------'
   sh 'printenv'
   echo '-----post-printenv-----'
-  def ret2 = sh(script: 'printenv BRANCH_NAME', returnStdout: true)
+  def ret2 = shellout2('uname -a')
+  //def ret2 = sh(script: 'printenv BRANCH_NAME', returnStdout: true)
   println ret2
   
   def uploadSpec = """{
@@ -87,3 +88,9 @@ def shellout(command) {
   return proc.in.text
 }
 
+@NonCP
+def shellout2(command) {
+  def out = sh(returnStdout: true, script: command).trim()
+  println out
+  return out
+}
