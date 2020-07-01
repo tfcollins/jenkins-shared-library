@@ -38,10 +38,11 @@ def call(project, branch, targetname, filepattern) {
   echo '-----printenv-------'
   sh 'printenv'
   echo '-----post-printenv-----'
-  echo "${BRANCH_NAME}"
-  echo '-------------------'
-  //echo ${GIT_BRANCH#*/}
-  echo '-------------------'
+  def env2 = System.getenv()
+  //Print all the environment variables.
+  env2.each{
+    println it
+  }
   
   def uploadSpec = """{
     "files": [
