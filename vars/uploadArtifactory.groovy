@@ -39,8 +39,8 @@ def call(project, branch, targetname, filepattern) {
   echo '-----printenv-------'
   sh 'printenv'
   echo '-----post-printenv-----'
-  def ret = sh(script: 'uname', returnStdout: true)
-  println ret
+  def ret2 = sh(script: 'printenv BRANCH_NAME', returnStdout: true)
+  println ret2
   
   def uploadSpec = """{
     "files": [
