@@ -22,10 +22,23 @@ def call(project, branch, targetname, filepattern) {
   // release
   //  TransceiverToolbox/release/trx-toolbox-tag
   
-  println env.JOB_NAME
+  echo '-------------------'
+  echo env.JOB_NAME
+  echo '-------------------'
+  
+  def thr = Thread.currentThread()
+  def build = thr?.executable
+  def envVarsMap = build.parent.builds[0].properties.get("JOB_NAME")
+  echo '-------------------'
+  echo envVarsMap
+  echo '-------------------'
+  
   git_branch_local=$(echo $GIT_BRANCH   | sed -e "s|origin/||g")
+  echo '-------------------'
   echo $git_branch_local
+  echo '-------------------'
   echo ${GIT_BRANCH#*/}
+  echo '-------------------'
   
   def uploadSpec = """{
     "files": [
