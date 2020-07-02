@@ -35,9 +35,10 @@ def call(project, targetname, filepattern) {
   echo '-------------------'
   println(env)
   println(env.GIT_COMMIT)
-  sh 'git rev-parse HEAD > commit'
+  sh 'git rev-parse --short HEAD > commit'
   def commit = readFile('commit').trim()
   println(commit)
+  target = target+"-"+commit
  
   def uploadSpec = """{
     "files": [
