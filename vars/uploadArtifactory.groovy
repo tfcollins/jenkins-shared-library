@@ -32,12 +32,10 @@ def call(project, targetname, filepattern) {
   // release
   //  TransceiverToolbox/release/trx-toolbox-tag
   
-  echo '-------------------'
-  println(env)
-  println(env.GIT_COMMIT)
+  echo '-------Artifactory Git Hash lookup-------'
   sh 'git rev-parse --short HEAD > commit'
   def commit = readFile('commit').trim()
-  println(commit)
+  println("Found git hash: "+commit)
   target = target+"-"+commit
  
   def uploadSpec = """{
