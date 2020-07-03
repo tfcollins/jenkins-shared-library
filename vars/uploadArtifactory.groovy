@@ -45,7 +45,7 @@ def call(project, filepattern) {
   println("Found git hash: "+commit)
   
   // Build folder/filename
-  target = target+"/"+commit+"/"
+  target = target+"/"+env.BUILD_ID+"-"+commit+"/"
   
   def uploadSpec = """{
     "files": [
