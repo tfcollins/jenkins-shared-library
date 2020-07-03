@@ -35,7 +35,7 @@ def call(project, filepattern) {
   //  TransceiverToolbox/release/trx-toolbox-tag
   
   // Check if we have files to upload based on target
-  sh 'ls '+filepattern+' > files_searched'
+  sh 'ls '+filepattern+' > files_searched || true'
   def files_list = readFile('files_searched')
   println("Files found: "+files_list)
   println(files_list.length())
