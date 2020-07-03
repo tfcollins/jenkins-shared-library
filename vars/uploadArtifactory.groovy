@@ -1,7 +1,5 @@
 def call(project, filepattern) {
   
-  def server = Artifactory.server "nuc-docker"
-
   root = 'sdg-generic-development/'
   ext = ''
   name = 'unnamed'
@@ -68,14 +66,16 @@ def call(project, filepattern) {
   // Collect meta
   buildInfo = Artifactory.newBuildInfo()
   
+  def server = Artifactory.server "nuc-docker"
+  
   // Do the upload Pew pew
-  def buildInfoUL = server.upload spec: uploadSpec
+  server.upload spec: uploadSpec
+  //def buildInfoUL = server.upload spec: uploadSpec
 
   // Merge the upload and build-info objects.
-  buildInfo.append buildInfoUL
+  //buildInfo.append buildInfoUL
 
   // Publish the build to Artifactory
-  echo buildInfo
   //server.publishBuildInfo buildInfo
   
   
