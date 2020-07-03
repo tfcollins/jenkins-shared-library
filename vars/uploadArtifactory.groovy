@@ -1,12 +1,16 @@
-def call(project, targetname, filepattern) {
+def call(project, filepattern) {
   
   def server = Artifactory.server "nuc-docker"
 
   root = 'sdg-generic-development/'
+  ext = ''
+  name = 'unnamed'
   if (project == 'hdl') {
     target = root+'hdl'
   }
   else if (project == 'TransceiverToolbox') {
+    ext = ".mltbx"
+    name = 'trx-toolbox'
     target = root+'TransceiverToolbox'
     
     if (env.BRANCH_NAME == 'master') {
@@ -19,11 +23,11 @@ def call(project, targetname, filepattern) {
   }
   
   
-  target = target+"/"+targetname
+  //target = target+"/"+targetname
   
   // Example layout
   // master
-  //  TransceiverToolbox/master/trx-toolbox-hash
+  //  TransceiverToolbox/master/trx-toolbox-hash.mltbx
   //  Last 4 kept for master
   // others
   //  TransceiverToolbox/dev/branch/trx-toolbox-hash
@@ -36,7 +40,14 @@ def call(project, targetname, filepattern) {
   sh 'git rev-parse --short HEAD > commit'
   def commit = readFile('commit').trim()
   println("Found git hash: "+commit)
-  target = target+"-"+commit
+  
+  // Build filename
+  if (ext.length() > 0) {
+    target = target+"/"+name+"-"+commit+ext
+  }
+  else {
+    target = target+"/"+name+"-"+commit
+  }
  
   def uploadSpec = """{
     "files": [
