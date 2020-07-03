@@ -41,7 +41,8 @@ def call(project, filepattern) {
   
   // Build filename
   if (ext.length() > 0) {
-    target = target+"/"+name+"-"+commit+ext
+    //target = target+"/"+name+"-"+commit+ext
+    target = target+"/"+name+"-"+commit
   }
   else {
     target = target+"/"+name+"-"+commit
