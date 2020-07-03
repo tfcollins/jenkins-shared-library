@@ -47,6 +47,7 @@ def call(project, filepattern) {
   else {
     target = target+"/"+name+"-"+commit
   }
+  target2 = root+'TransceiverToolbox/master/myfile'
  
   def uploadSpec = """{
     "files": [
@@ -57,8 +58,18 @@ def call(project, filepattern) {
    ]
   }"""
   
+  def uploadSpec2 = """{
+    "files": [
+      {
+        "pattern": "${filepattern}",
+        "target": "${target2}"
+      }
+   ]
+  }"""
+  
   echo "-----Artifactory Upload Spec-----"
   echo uploadSpec
+  echo uploadSpec2
   
   
   //server.setProps spec: setPropsSpec, props: “p1=v1;p2=v2”, failNoOp: true
@@ -72,6 +83,8 @@ def call(project, filepattern) {
   // Do the upload Pew pew
   server.upload spec: uploadSpec
   echo "Upload Complete"
+  server.upload spec: uploadSpec2
+  echo "Upload2 Complete"
   //def buildInfoUL = server.upload spec: uploadSpec
 
   // Merge the upload and build-info objects.
