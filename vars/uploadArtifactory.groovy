@@ -53,8 +53,9 @@ def call(project, filepattern) {
   else {
     target = target+"/"+name+"-"+commit
   }
-  target2 = root+'TransceiverToolbox/master/myfile'
- 
+
+  target = target+"/"
+  
   def uploadSpec = """{
     "files": [
       {
