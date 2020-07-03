@@ -31,6 +31,10 @@ def call(java.util.ArrayList listOfResources, UseNFS=false){
           args.add('-v "/root/.Xilinx":"/root/.Xilinx":ro');
         }
     }
+    // Add correct MAC to licenses work in Docker
+    withCredentials([string(credentialsId: 'MAC_ADDR', variable: 'MAC_ADDR')]) {
+      args.add('--mac-address '+MAC_ADDR)
+    }
 
   }
 
