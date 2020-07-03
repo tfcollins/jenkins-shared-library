@@ -75,7 +75,8 @@ def call(project, filepattern) {
   buildInfo.append buildInfoUL
 
   // Publish the build to Artifactory
-  server.publishBuildInfo buildInfo
+  echo buildInfo
+  //server.publishBuildInfo buildInfo
   
   
 }
