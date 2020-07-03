@@ -58,6 +58,7 @@ def call(project, filepattern) {
    ]
   }"""
   
+  filepattern = '*'
   def uploadSpec2 = """{
     "files": [
       {
