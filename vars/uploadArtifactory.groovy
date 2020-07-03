@@ -70,6 +70,7 @@ def call(project, filepattern) {
   
   // Do the upload Pew pew
   server.upload spec: uploadSpec
+  echo "Upload Complete"
   //def buildInfoUL = server.upload spec: uploadSpec
 
   // Merge the upload and build-info objects.
