@@ -19,42 +19,33 @@ def call(project, filepattern) {
     }
     
   }
-  
-  
-  //target = target+"/"+targetname
-  
+   
   // Example layout
   // master
-  //  TransceiverToolbox/master/trx-toolbox-hash.mltbx
+  //  TransceiverToolbox/master/<hash>/<files>
   //  Last 4 kept for master
   // others
-  //  TransceiverToolbox/dev/branch/trx-toolbox-hash
+  //  TransceiverToolbox/dev/branch/<hash>/<files>
   //  Last 2 kept
   //  Folder deleted when merged into master after 7 days
   // release
-  //  TransceiverToolbox/release/trx-toolbox-tag
+  //  TransceiverToolbox/release/trx-toolbox-tag/<files>
   
   // Check if we have files to upload based on target
   sh 'ls '+filepattern+' > files_searched || true'
   def files_list = readFile('files_searched')
   println("Files found: "+files_list)
-  println(files_list.length())
+  if (files_list.length() <= 0) {
+    return;
+  }
   
   echo '-------Artifactory Git Hash lookup-------'
   sh 'git rev-parse --short HEAD > commit'
   def commit = readFile('commit').trim()
   println("Found git hash: "+commit)
   
-  // Build filename
-  if (ext.length() > 0) {
-    //target = target+"/"+name+"-"+commit+ext
-    target = target+"/"+name+"-"+commit
-  }
-  else {
-    target = target+"/"+name+"-"+commit
-  }
-
-  target = target+"/"
+  // Build folder/filename
+  target = target+"/"+commit+"/"
   
   def uploadSpec = """{
     "files": [
