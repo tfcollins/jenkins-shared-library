@@ -34,6 +34,12 @@ def call(project, filepattern) {
   // release
   //  TransceiverToolbox/release/trx-toolbox-tag
   
+  // Check if we have files to upload based on target
+  sh 'ls '+filepattern+' > files_searched'
+  def files_list = readFile('files_searched')
+  println("Files found: "+files_list)
+  println(files_list.length())
+  
   echo '-------Artifactory Git Hash lookup-------'
   sh 'git rev-parse --short HEAD > commit'
   def commit = readFile('commit').trim()
@@ -58,19 +64,8 @@ def call(project, filepattern) {
    ]
   }"""
   
-  filepattern = '*'
-  def uploadSpec2 = """{
-    "files": [
-      {
-        "pattern": "${filepattern}",
-        "target": "${target2}"
-      }
-   ]
-  }"""
-  
   echo "-----Artifactory Upload Spec-----"
   echo uploadSpec
-  echo uploadSpec2
   
   
   //server.setProps spec: setPropsSpec, props: “p1=v1;p2=v2”, failNoOp: true
@@ -84,8 +79,7 @@ def call(project, filepattern) {
   // Do the upload Pew pew
   server.upload spec: uploadSpec
   echo "Upload Complete"
-  server.upload spec: uploadSpec2
-  echo "Upload2 Complete"
+
   //def buildInfoUL = server.upload spec: uploadSpec
 
   // Merge the upload and build-info objects.
