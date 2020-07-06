@@ -65,8 +65,15 @@ def call(project, filepattern) {
   
   // Collect meta
   buildInfo = Artifactory.newBuildInfo()
+  def server;
   
-  def server = Artifactory.server "nuc-docker"
+  withCredentials([string(credentialsId: 'ARTIFACTORY_SERVER', variable: 'ARTIFACTORY_SERVER')]) {
+      server = Artifactory.server ARTIFACTORY_SERVER
+  }
+  if (!server) {
+    // Use default testing server
+    server = Artifactory.server "nuc-docker"
+  }
   
   // Do the upload Pew pew
   server.upload spec: uploadSpec
