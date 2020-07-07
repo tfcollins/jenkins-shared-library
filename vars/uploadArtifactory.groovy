@@ -9,10 +9,10 @@ def call(project, filepattern) {
   else if (project == 'TransceiverToolbox') {
     ext = ".mltbx"
     name = 'trx-toolbox'
-    target = root+'TransceiverToolbox'
+    target = root+'TransceiverToolbox/'
     
     if (env.BRANCH_NAME == 'master') {
-      target = target+"/master"
+      target = target+'master/'
     }
     else {
       target = target+"/dev/"+env.BRANCH_NAME
