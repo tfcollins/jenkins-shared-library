@@ -10,12 +10,16 @@ def call(project, filepattern) {
     ext = ".mltbx"
     name = 'trx-toolbox'
     target = root+'TransceiverToolbox/'
-    
+    println("Found branch: "+env.BRANCH_NAME)
+    println(env)
     if (env.BRANCH_NAME == 'master') {
+      println("master")
+      println(target)
       target = target+'master/'
+      println(target)
     }
     else {
-      target = target+"/dev/"+env.BRANCH_NAME
+      target = target+"/dev/"+env.BRANCH_NAME+"/"
     }
     
   }
