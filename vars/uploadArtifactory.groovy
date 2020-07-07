@@ -10,16 +10,20 @@ def call(project, filepattern) {
     ext = ".mltbx"
     name = 'trx-toolbox'
     target = root+'TransceiverToolbox/'
-    println("Found branch: "+env.BRANCH_NAME)
-    println(env)
-    if (env.BRANCH_NAME == 'master') {
-      println("master")
-      println(target)
-      target = target+'master/'
-      println(target)
+    
+    def branch = env.BRANCH_NAME
+    if (!env.BRANCH_NAME) {
+       sh 'git branch > branchname'
+       sh 'sed -i "s/\*//" branchname'
+       branch = readFile('branchname').trim()
+    }
+    
+    println("Found branch: "+branch)
+    if (branch == 'master') {
+      target = target+'master'
     }
     else {
-      target = target+"/dev/"+env.BRANCH_NAME+"/"
+      target = target+"dev/"+branch
     }
     
   }
@@ -81,7 +85,7 @@ def call(project, filepattern) {
   }
   
   // Do the upload Pew pew
-  server.upload spec: uploadSpec
+  //server.upload spec: uploadSpec
   echo "Upload Complete"
 
   //def buildInfoUL = server.upload spec: uploadSpec
