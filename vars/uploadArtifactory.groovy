@@ -14,7 +14,7 @@ def call(project, filepattern) {
     def branch = env.BRANCH_NAME
     if (!env.BRANCH_NAME) {
        sh 'git branch > branchname'
-       sh 'sed -i "s/\*//" branchname'
+       sh 'sed -i "s/[*]//" branchname'
        branch = readFile('branchname').trim()
     }
     
