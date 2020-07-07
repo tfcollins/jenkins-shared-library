@@ -19,7 +19,8 @@ def call(project, filepattern) {
     }
     
   }
-   
+  println("---Artifactory pre-target root")
+  println(target)
   // Example layout
   // master
   //  TransceiverToolbox/master/<hash>/<files>
