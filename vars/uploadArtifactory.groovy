@@ -13,6 +13,7 @@ def call(project, filepattern) {
     
     def branch = env.BRANCH_NAME
     if (!env.BRANCH_NAME) {
+       println("Branch name not found in environment, checking through git")
        sh 'git branch > branchname'
        sh 'sed -i "s/[*]//" branchname'
        branch = readFile('branchname').trim()
