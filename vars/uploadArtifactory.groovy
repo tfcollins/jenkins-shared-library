@@ -12,7 +12,6 @@ def call(project, filepattern) {
     target = root+'TransceiverToolbox/'
     
     def branch = env.BRANCH_NAME
-    println("----"+branch+"----")
     if (!env.BRANCH_NAME) {
        println("Branch name not found in environment, checking through git")
        sh 'git branch > branchname'
@@ -51,8 +50,12 @@ def call(project, filepattern) {
   }
   
   echo '-------Artifactory Git Hash lookup-------'
-  sh 'git rev-parse --short HEAD > commit'
-  def commit = readFile('commit').trim()
+  def commit = env.GIT_COMMIT
+  if (!env.GIT_COMMIT) {
+    println("Git commit hash not found in environment, checking through git")
+    sh 'git rev-parse --short HEAD > commit'
+    commit = readFile('commit').trim()
+  }
   println("Found git hash: "+commit)
   
   // Build folder/filename
