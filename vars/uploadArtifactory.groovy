@@ -12,6 +12,7 @@ def call(project, filepattern) {
     target = root+'TransceiverToolbox/'
     
     def branch = env.BRANCH_NAME
+    println("----"+branch+"----")
     if (!env.BRANCH_NAME) {
        println("Branch name not found in environment, checking through git")
        sh 'git branch > branchname'
