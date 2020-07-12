@@ -24,11 +24,11 @@ def call(java.util.ArrayList listOfResources, UseNFS=false){
         echo "----Adding Vivado Resources----"
         if (UseNFS) {
           args.add('-v "/nfs/apps/Xilinx":"/opt/Xilinx":ro')
-          args.add('-v "/nfs/apps/resources/dot_Xilinx":"/root/.Xilinx":ro')
+          args.add('-v "/nfs/apps/resources/dot_Xilinx":"/root/.Xilinxro":ro')
         }
         else {
           args.add('-v "/opt/Xilinx":"/opt/Xilinx":ro')
-          args.add('-v "/root/.Xilinx":"/root/.Xilinx":ro');
+          args.add('-v "/root/.Xilinx":"/root/.Xilinxro":ro');
         }
         args.add('-e "LM_LICENSE_FILE=$LM_LICENSE_FILE" -e "XILINXD_LICENSE_FILE=$XILINXD_LICENSE_FILE"')
     }
