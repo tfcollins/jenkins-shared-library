@@ -40,14 +40,15 @@ def call(branchNames, dockerHost, dockerArgs, dockerstages){
   for ( i=0; i<branchNames.size(); i++ ) {
 
       def branchName = branchNames[i]
-      //def dockerENVS = ["-e HDLBRANCH=${hdlBranch}","-e MLRELEASE=${MATLABRelease}","-e BOARD=${boardName}"]
-      //def permuted
 
       tests[branchName] = {
           node (label: dockerHost) {
 
               stage (branchName) {
                   docker.image('tfcollins/hdl-ci:latest').inside(dockerArgs) {
+                    stage('Docker Setup') {
+                        sh '/usr/local/bin/docker-entrypoint.sh'
+                    }
                     dockerstages(branchName)
                   }
                   cleanWs()
