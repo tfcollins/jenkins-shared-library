@@ -11,12 +11,12 @@ def call(java.util.ArrayList listOfResources, UseNFS=false){
         echo "----Adding MATLAB Resources----"
         if (UseNFS) {
           args.add('-v "/nfs/apps/MATLAB":"/usr/local/MATLAB":ro')
-          args.add('-v "/nfs/apps/resources/dot_matlab":"/root/.matlab":ro')
+          args.add('-v "/nfs/apps/resources/dot_matlab":"/root/.matlabro":ro')
           args.add('-v "/nfs/apps/resources/mlhsp":"/mlhsp":ro')
         }
         else {
           args.add('-v "/usr/local/MATLAB":"/usr/local/MATLAB":ro')
-          args.add('-v "/root/.matlab":"/root/.matlab":ro')
+          args.add('-v "/root/.matlab":"/root/.matlabro":ro')
           args.add('-v "/mlhsp":"/mlhsp":ro')
         }
     }
