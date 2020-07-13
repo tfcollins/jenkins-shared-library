@@ -31,6 +31,9 @@ def call(java.util.ArrayList listOfResources, UseNFS=false){
           args.add('-v "/root/.Xilinx":"/root/.Xilinxro":ro');
         }
         args.add('-e "LM_LICENSE_FILE=$LM_LICENSE_FILE" -e "XILINXD_LICENSE_FILE=$XILINXD_LICENSE_FILE"')
+        // Zombie processed get created without this argument
+        // https://stackoverflow.com/questions/55733058/vivado-synthesis-hangs-in-docker-container-spawned-by-jenkins
+        args.add('--init')
     }
     // Add correct MAC to licenses work in Docker
     withCredentials([string(credentialsId: 'MAC_ADDR', variable: 'MAC_ADDR')]) {
