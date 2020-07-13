@@ -50,7 +50,7 @@ def call(branchNames, dockerHost, dockerArgs, dockerstages){
                     sh 'chmod +x /usr/local/bin/docker-entrypoint.sh'
                     sh '/usr/local/bin/docker-entrypoint.sh'
                     sh 'ls /'
-                    sh 'ls /root/*'
+                    sh 'ls /root/'
                     dockerstages(branchName)
                   }
                   cleanWs()
