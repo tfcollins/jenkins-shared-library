@@ -46,11 +46,9 @@ def call(branchNames, dockerHost, dockerArgs, dockerstages){
 
               stage (branchName) {
                   docker.image('tfcollins/hdl-ci:latest').inside(dockerArgs) {
-                    sh 'ls /usr/local/bin/'
-                    sh 'ls /usr/local/bin/*'
-                    sh 'ls /usr/bin/*'
                     sh 'chmod +x /usr/local/bin/docker-entrypoint.sh'
                     sh '/usr/local/bin/docker-entrypoint.sh'
+                    sh 'ls /root/*'
                     dockerstages(branchName)
                   }
                   cleanWs()
