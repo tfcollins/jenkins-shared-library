@@ -49,6 +49,7 @@ def call(branchNames, dockerHost, dockerArgs, dockerstages){
                     sh 'ls /usr/local/bin/'
                     sh 'ls /usr/local/bin/*'
                     sh 'ls /usr/bin/*'
+                    sh 'chmod +x /usr/local/bin/docker-entrypoint.sh'
                     sh '/usr/local/bin/docker-entrypoint.sh'
                     dockerstages(branchName)
                   }
