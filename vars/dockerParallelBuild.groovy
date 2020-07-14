@@ -31,7 +31,6 @@ buildParallelWithDocker(branches2, dockerArgs2){
 def call(branchNames, dockerHost, dockerArgs, dockerstages){
 
   def tests = [:]
-  //def dockerHost = 'ubuntu-vm'
     
   if (dockerArgs instanceof List) {
       dockerArgs = dockerArgs.join(" ")
@@ -46,7 +45,6 @@ def call(branchNames, dockerHost, dockerArgs, dockerstages){
 
               stage (branchName) {
                   docker.image('tfcollins/hdl-ci:latest').inside(dockerArgs) {
-                    sh 'ls /'
                     sh 'chmod +x /usr/local/bin/docker-entrypoint.sh'
                     sh '/usr/local/bin/docker-entrypoint.sh'
                     dockerstages(branchName)
