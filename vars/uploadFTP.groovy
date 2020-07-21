@@ -22,7 +22,7 @@ def call(project, filename) {
       target = target+'master'
     }
     else {
-      target = target+"dev/"+branch
+      target = target+"dev"
     }
     
   }
