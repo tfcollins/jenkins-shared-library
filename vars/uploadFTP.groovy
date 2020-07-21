@@ -7,7 +7,7 @@ def call(project, filename) {
   }
   else if (project == 'TransceiverToolbox') {
     ext = ".mltbx"
-    target = 'toolboxes/'
+    target = 'toolboxes/trx/'
     
     def branch = env.BRANCH_NAME
     if (!env.BRANCH_NAME) {
