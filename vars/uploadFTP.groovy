@@ -53,7 +53,7 @@ def call(project, filename) {
   withCredentials([string(credentialsId: 'FTP_SERVER', variable: 'FTP_SERVER')]) {
   withCredentials([string(credentialsId: 'FTP_ROOT_TARGET', variable: 'FTP_ROOT_TARGET')]) {
   
-      upload_target = $FTP_ROOT_TARGET+$UPLOAD_TARGET
+      upload_target = FTP_ROOT_TARGET+UPLOAD_TARGET
       println("Uploading: $filename")
       println("Target: $upload_target")
       sh 'lftp -e "set ssl:verify-certificate no; cd $upload_target; ls; bye" -u $FTP_USERNAME,$FTP_PASS $FTP_SERVER'
