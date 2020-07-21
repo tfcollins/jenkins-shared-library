@@ -26,6 +26,10 @@ def call(project, filename) {
     }
     
   }
+  else {
+    println("Unknown project... returning")
+    return;
+  }
   println("---FTP pre-target root")
   println(target)
   // Example layout
