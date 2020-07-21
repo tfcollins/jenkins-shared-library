@@ -56,7 +56,8 @@ def call(project, filename) {
       upload_target = FTP_ROOT_TARGET+target
       println("Uploading: $filename")
       println("Target: $upload_target")
-      sh 'lftp -e "set ssl:verify-certificate no; cd ${upload_target}; ls; bye" -u $FTP_USERNAME,$FTP_PASS $FTP_SERVER'
+      commands = "set ssl:verify-certificate no; cd "+upload_target+"; ls; bye;"
+      sh 'lftp -e "'+commands+'" -u $FTP_USERNAME,$FTP_PASS $FTP_SERVER'
       
   }}}
 
