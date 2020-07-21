@@ -47,8 +47,6 @@ def call(project, filename) {
     println("No files to upload");
     return;
   }
-  
-  println("Found git hash: "+commit)
    
   // Set FTP settings
   withCredentials([usernamePassword(credentialsId: 'FTP_USER', passwordVariable: 'FTP_PASS', usernameVariable: 'FTP_USERNAME')]) {
