@@ -28,6 +28,10 @@ def call(project, filepattern) {
     }
     
   }
+  else {
+   println("Unknown project. Not uploading artifacts")
+   return
+  }
   println("---Artifactory pre-target root")
   println(target)
   // Example layout
