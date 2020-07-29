@@ -2,6 +2,7 @@ def call(project, filename) {
   
   root = ''
   ext = ''
+  
   if (project == 'hdl') {
     target = root+'hdl'
   }
@@ -9,6 +10,7 @@ def call(project, filename) {
     ext = ".mltbx"
     target = 'toolboxes/trx/'
     
+    // Determine branch
     def branch = env.BRANCH_NAME
     if (!env.BRANCH_NAME) {
        println("Branch name not found in environment, checking through git")
@@ -16,7 +18,27 @@ def call(project, filename) {
        sh 'sed -i "s/[*]//" branchname'
        branch = readFile('branchname').trim()
     }
+    println("Found branch: "+branch)
+    if (branch == 'master') {
+      target = target+'master'
+    }
+    else {
+      target = target+"dev"
+    }
     
+  }
+  else if (project == 'HighSpeedConverterToolbox') {
+    ext = ".mltbx"
+    target = 'toolboxes/hsx/'
+    
+    // Determine branch
+    def branch = env.BRANCH_NAME
+    if (!env.BRANCH_NAME) {
+       println("Branch name not found in environment, checking through git")
+       sh 'git branch > branchname'
+       sh 'sed -i "s/[*]//" branchname'
+       branch = readFile('branchname').trim()
+    }
     println("Found branch: "+branch)
     if (branch == 'master') {
       target = target+'master'
@@ -32,23 +54,13 @@ def call(project, filename) {
   }
   println("---FTP pre-target root")
   println(target)
-  // Example layout
-  // master
-  //  TransceiverToolbox/master/<hash>/<files>
-  //  Last 4 kept for master
-  // others
-  //  TransceiverToolbox/dev/branch/<hash>/<files>
-  //  Last 2 kept
-  //  Folder deleted when merged into master after 7 days
-  // release
-  //  TransceiverToolbox/release/trx-toolbox-tag/<files>
   
   // Check if we have files to upload based on target
   sh 'ls '+filename+' > files_searched || true'
   def files_list = readFile('files_searched')
   println("Files found: "+files_list)
   if (files_list.length() <= 0) {
-    println("No files to upload");
+    println("No files to upload... returning");
     return;
   }
    
