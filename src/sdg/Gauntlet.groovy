@@ -36,6 +36,7 @@ def getOnlineAgents(){
       if (!computer.offline)
         online_agents.add(computer.name)
     }
+    println(online_agents)
     return online_agents
 }
 
