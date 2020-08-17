@@ -16,6 +16,7 @@ def construct(List dependencies){
             agents_online: '',
             debug: false,
             board_map: [:],
+            stages: [],
             agents: '',
             boards: '',
             setup_called: false,
@@ -71,6 +72,35 @@ def test_stage(board,ip) {
   }
 }
 
+def stage_library(String stage_name){
+
+  switch(stage_name) {
+    case "UpdateBOOTFiles":
+      cls = {
+        stage("Update BOOT Files") {
+          nebula("dl.bootfiles --design-name="+board)
+          nebula("manager.update-boot-files --folder=outs")
+        }
+      };
+      break;
+      case "CollectLogs":
+        cls = {
+          stage("Collect Logs") {
+            echo "Collect Logs"
+          }
+        };
+        break;
+    }
+
+    return cls;
+}
+
+def add_stage(cls) {
+
+  gauntEnv.stages.add(cls)
+
+}
+
 def run_agents() {
 
   // Start stages for each node with a board
@@ -79,36 +109,37 @@ def run_agents() {
 
     def agent = gauntEnv.agents[i]
     def board = gauntEnv.boards[i]
+    def num_stages = gauntEnv.stages.size()
 
     println("Agent: "+agent+" Board: "+board)
 
     jobs[board] = {
       node(agent) {
 
-        stage('Update BOOT files') {
-          nebula("dl.bootfiles --design-name="+board)
-          nebula("manager.update-boot-files --folder=outs")
-        }
+        // stage('Update BOOT files') {
+        //   nebula("dl.bootfiles --design-name="+board)
+        //   nebula("manager.update-boot-files --folder=outs")
+        // }
 
-        test_stage(board,"123")
+        // stage('Run Tests') {
+        //   ip = nebula("uart.get-ip")
+        //   println("IP: "+ip)
+        //   sh "git clone https://github.com/analogdevicesinc/pyadi-iio.git"
+        //   dir("pyadi-iio")
+        //   {
+        //       sh "ls"
+        //       run("pip3 install -r requirements.txt")
+        //       run("pip3 install -r requirements_dev.txt")
+        //       run("pip3 install pylibiio")
+        //       run("python3 -m pytest -v -s --uri='ip:"+ip+"' -m "+board.replaceAll("-","_"))
+        //   }
+        // }
 
-        stage('Run Tests') {
-          ip = nebula("uart.get-ip")
-          println("IP: "+ip)
-          sh "git clone https://github.com/analogdevicesinc/pyadi-iio.git"
-          dir("pyadi-iio")
-          {
-              sh "ls"
-              run("pip3 install -r requirements.txt")
-              run("pip3 install -r requirements_dev.txt")
-              run("pip3 install pylibiio")
-              run("python3 -m pytest -v -s --uri='ip:"+ip+"' -m "+board.replaceAll("-","_"))
-          }
-        }
-
-        stage('Collect Logs') {
-          echo "Collecting logs"
-        }
+        // stage('Collect Logs') {
+        //   echo "Collecting logs"
+        // }
+        for (k=0; k<num_stages; k++)
+          gauntEnv.stages[i].call()
 
       }
     }
