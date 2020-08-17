@@ -141,7 +141,7 @@ def run_agents() {
         //   echo "Collecting logs"
         // }
         for (k=0; k<num_stages; k++)
-          gauntEnv.stages[i].call()
+          gauntEnv.stages[k].call()
 
       }
     }
