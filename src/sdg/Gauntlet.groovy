@@ -44,8 +44,6 @@ def setup_agents() {
       node(agent_name) {
         stage('Query agents') {
           setupAgent("nebula")
-          //run("nebula --help")
-          nebula("--help")
           board = nebula("update-config board-config board-name")
           println("BOARD: "+board)
           board_map[agent_name] = board
@@ -66,6 +64,13 @@ def setup_agents() {
   gauntEnv.boards = boards
 }
 
+def test_stage(board,ip) {
+  stage("Test"){
+    println("IP: "+ip)
+    println("board: "+board)
+  }
+}
+
 def run_agents() {
 
   // Start stages for each node with a board
@@ -79,14 +84,15 @@ def run_agents() {
 
     jobs[board] = {
       node(agent) {
+
         stage('Update BOOT files') {
-          echo "Update boot files"
           nebula("dl.bootfiles --design-name="+board)
-          //nebula("show-log manager.update-boot-files --folder=outs")
           nebula("manager.update-boot-files --folder=outs")
         }
+
+        test_stage(board,"123")
+
         stage('Run Tests') {
-          echo "Tests running"
           ip = nebula("uart.get-ip")
           println("IP: "+ip)
           sh "git clone https://github.com/analogdevicesinc/pyadi-iio.git"
@@ -99,9 +105,11 @@ def run_agents() {
               run("python3 -m pytest -v -s --uri='ip:"+ip+"' -m "+board.replaceAll("-","_"))
           }
         }
+
         stage('Collect Logs') {
           echo "Collecting logs"
         }
+
       }
     }
 
@@ -110,9 +118,16 @@ def run_agents() {
   stage('Update and Test') {
       parallel jobs
   }
-  
+
 }
 
+
+def run_stages() {
+
+  setup_agents()
+  run_agents()
+
+}
 
 // Private methods
 @NonCPS
@@ -160,8 +175,10 @@ private def checkOs(){
     }
 }
 
-private def nebula(cmd, full=false){
+private def nebula(cmd, full=false, show_log=false){
     // full=false
+    if (show_log)
+      cmd = "show-log " + cmd
     cmd = "nebula "+cmd
     if (checkOs()=="Windows") {
         script_out = bat(script: cmd, returnStdout: true).trim()
