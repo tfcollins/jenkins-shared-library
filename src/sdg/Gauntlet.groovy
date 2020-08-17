@@ -13,8 +13,6 @@ gauntEnv
 def construct(List dependencies){
 
     gauntEnv = [
-            ip : ip,
-            port: port,
             agents_online: '',
             debug: false // default value that can be overwritten
     ]
