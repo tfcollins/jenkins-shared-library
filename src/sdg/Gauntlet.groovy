@@ -76,6 +76,7 @@ def stage_library(String stage_name){
 
   switch(stage_name) {
     case "UpdateBOOTFiles":
+      println("Added Stage UpdateBOOTFiles")
       cls = {
         stage("Update BOOT Files") {
           nebula("dl.bootfiles --design-name="+board)
@@ -83,13 +84,14 @@ def stage_library(String stage_name){
         }
       };
       break;
-      case "CollectLogs":
-        cls = {
-          stage("Collect Logs") {
-            echo "Collect Logs"
-          }
-        };
-        break;
+    case "CollectLogs":
+      println("Added Stage CollectLogs")
+      cls = {
+        stage("Collect Logs") {
+          echo "Collect Logs"
+        }
+      };
+      break;
     }
 
     return cls;
