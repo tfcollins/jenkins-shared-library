@@ -170,6 +170,7 @@ private def setupAgent(Object... args){
     }
 }
 
+/*
 private def run(cmd){
     if (checkOs()=="Windows") {
         bat cmd
@@ -178,3 +179,4 @@ private def run(cmd){
         sh cmd
     }
 }
+*/
