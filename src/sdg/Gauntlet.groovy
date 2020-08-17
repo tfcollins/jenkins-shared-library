@@ -92,6 +92,26 @@ def stage_library(String stage_name){
         }
       };
       break;
+    case "PyADITests":
+      cls = {
+          stage('Run Python Tests') {
+            ip = nebula("uart.get-ip")
+            println("IP: "+ip)
+            sh "git clone https://github.com/analogdevicesinc/pyadi-iio.git"
+            dir("pyadi-iio")
+            {
+                sh "ls"
+                run("pip3 install -r requirements.txt")
+                run("pip3 install -r requirements_dev.txt")
+                run("pip3 install pylibiio")
+                run("python3 -m pytest -v -s --uri='ip:"+ip+"' -m "+board.replaceAll("-","_"))
+            }
+          }
+        }
+        break;
+      default:
+        throw new Exception("Unknown library stage: "+stage_name)
+
     }
 
     return cls;
@@ -118,28 +138,6 @@ def run_agents() {
     jobs[board] = {
       node(agent) {
 
-        // stage('Update BOOT files') {
-        //   nebula("dl.bootfiles --design-name="+board)
-        //   nebula("manager.update-boot-files --folder=outs")
-        // }
-
-        // stage('Run Tests') {
-        //   ip = nebula("uart.get-ip")
-        //   println("IP: "+ip)
-        //   sh "git clone https://github.com/analogdevicesinc/pyadi-iio.git"
-        //   dir("pyadi-iio")
-        //   {
-        //       sh "ls"
-        //       run("pip3 install -r requirements.txt")
-        //       run("pip3 install -r requirements_dev.txt")
-        //       run("pip3 install pylibiio")
-        //       run("python3 -m pytest -v -s --uri='ip:"+ip+"' -m "+board.replaceAll("-","_"))
-        //   }
-        // }
-
-        // stage('Collect Logs') {
-        //   echo "Collecting logs"
-        // }
         for (k=0; k<num_stages; k++)
           gauntEnv.stages[k].call()
 
@@ -156,10 +154,8 @@ def run_agents() {
 
 
 def run_stages() {
-
   setup_agents()
   run_agents()
-
 }
 
 // Private methods
