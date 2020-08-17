@@ -137,3 +137,58 @@ private def nebula(cmd, full=false){
     println(out)
     return out
 }
+
+private def install_nebula() {
+    if (checkOs()=="Windows") {
+        bat 'git clone https://github.com/tfcollins/nebula.git'
+        dir('nebula')
+        {
+            bat 'pip install -r requirements.txt'
+            bat 'python setup.py install'
+        }
+    }
+    else {
+        sh 'git clone https://github.com/tfcollins/nebula.git'
+        dir('nebula')
+        {
+            sh 'pip3 install -r requirements.txt'
+            sh 'python3 setup.py install'
+        }
+    }
+}
+
+private def setupAgent(Object... args){
+    try {
+        for (i=0; i<args.length; i++) {
+            println(args[i])
+            if (args[i]=="nebula")
+                install_nebula()
+        }
+    }
+    finally {
+        cleanWs();
+    }
+}
+
+private def run(cmd){
+    if (checkOs()=="Windows") {
+        bat cmd
+    }
+    else {
+        sh cmd
+    }
+}
+
+@NonCPS
+private def splitMap(map){
+
+    def keys = [];
+    def values = [];
+    for (entry in map){
+        keys.add(entry.key)
+        values.add(entry.value)
+    }
+
+
+    return [keys, values];
+}
