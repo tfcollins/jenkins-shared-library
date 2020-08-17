@@ -31,14 +31,11 @@ def getOnlineAgents(){
     def online_agents = []
     for (agent in jenkins.getNodes()) {
       def computer = agent.computer
-      println(agent)
-      println(computer.name)
       if (computer.name=="alpine")
         continue;
       if (!computer.offline)
         online_agents.add(computer.name)
     }
-    println(online_agents)
     return online_agents
 }
 
