@@ -16,6 +16,8 @@ def construct(List dependencies){
             agents_online: '',
             debug: false,
             board_map: [:],
+            agents: '',
+            boards: '',
             setup_called: false,
             configure_called: false
     ]
@@ -58,6 +60,57 @@ def setup_agents() {
   }
 
   println(board_map)
+  gauntEnv.board_map = board_map
+  (agents, boards) = splitMap(board_map)
+  gauntEnv.agents = agents
+  gauntEnv.boards = boards
+}
+
+def run_agents() {
+
+  // Start stages for each node with a board
+  jobs = [:]
+  for (i=0; i<gauntEnv.boards.size(); i++) {
+
+    def agent = gauntEnv.agents[i]
+    def board = gauntEnv.boards[i]
+
+    println("Agent: "+agent+" Board: "+board)
+
+    jobs[board] = {
+      node(agent) {
+        stage('Update BOOT files') {
+          echo "Update boot files"
+          nebula("dl.bootfiles --design-name="+board)
+          //nebula("show-log manager.update-boot-files --folder=outs")
+          nebula("manager.update-boot-files --folder=outs")
+        }
+        stage('Run Tests') {
+          echo "Tests running"
+          ip = nebula("uart.get-ip")
+          println("IP: "+ip)
+          sh "git clone https://github.com/analogdevicesinc/pyadi-iio.git"
+          dir("pyadi-iio")
+          {
+              sh "ls"
+              run("pip3 install -r requirements.txt")
+              run("pip3 install -r requirements_dev.txt")
+              run("pip3 install pylibiio")
+              run("python3 -m pytest -v -s --uri='ip:"+ip+"' -m "+board.replaceAll("-","_"))
+          }
+        }
+        stage('Collect Logs') {
+          echo "Collecting logs"
+        }
+      }
+    }
+
+  }
+
+  stage('Update and Test') {
+      parallel jobs
+  }
+  
 }
 
 
