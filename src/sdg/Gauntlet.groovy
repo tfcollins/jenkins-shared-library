@@ -22,6 +22,10 @@ def construct(List dependencies){
     gauntEnv.agents_online = getOnlineAgents()
 }
 
+def print_agents() {
+    println(gauntEnv.agents_online)
+}
+
 
 @NonCPS
 def getOnlineAgents(){
