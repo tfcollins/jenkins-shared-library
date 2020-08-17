@@ -223,6 +223,7 @@ private def setupAgent(Object... args){
     }
 }
 
+/*
 private def run(cmd){
     if (checkOs()=="Windows") {
         bat cmd
@@ -231,17 +232,4 @@ private def run(cmd){
         sh cmd
     }
 }
-
-@NonCPS
-private def splitMap(map){
-
-    def keys = [];
-    def values = [];
-    for (entry in map){
-        keys.add(entry.key)
-        values.add(entry.value)
-    }
-
-
-    return [keys, values];
-}
+*/
