@@ -171,7 +171,7 @@ private def check_required_hardware() {
   if (! gauntEnv.boards.contains(gauntEnv.required_hardware[i]) )
    error(gauntEnv.required_hardware[i]+' not found in harness. Failing pipeline')
   // Filter out
-  def indx = indexOf(gauntEnv.required_hardware[i]) 
+  def indx = gauntEnv.boards.indexOf(gauntEnv.required_hardware[i]) 
   filtered_board_list.add(gauntEnv.boards(indx));
   filtered_agent_list.add(gauntEnv.agents(indx));
  }
