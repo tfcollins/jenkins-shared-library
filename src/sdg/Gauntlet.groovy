@@ -30,6 +30,7 @@ def construct(List dependencies, hdlBranch, linuxBranch, bootfile_source){
             boards: [],
             required_hardware: [],
             setup_called: false,
+            nebula_debug: false,
             configure_called: false
     ]
 
@@ -235,6 +236,8 @@ private def checkOs(){
 
 private def nebula(cmd, full=false, show_log=false){
     // full=false
+    if (gauntEnv.nebula_debug)
+       show_log = true;
     if (show_log)
       cmd = "show-log " + cmd
     cmd = "nebula "+cmd
