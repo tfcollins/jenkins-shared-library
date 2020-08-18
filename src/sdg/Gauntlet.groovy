@@ -9,10 +9,19 @@ gauntEnv
  * @param dependencies - List of strings which are names of dependencies
  * @return
  */
-def construct(List dependencies){
+
+ // def dependencies = ["nebula","libiio","libiio-py"]
+// def hdlBranch = "hdl_2019_r1"
+// def linuxBranch = "2019_R1"
+// def bootfile_source = 'artifactory' // options: sftp, artifactory, http, local
+
+def construct(List dependencies, hdlBranch, linuxBranch, bootfile_source){
 
     gauntEnv = [
             dependencies: dependencies,
+            hdlBranch: hdlBranch,
+            linuxBranch: linuxBranch,
+            bootfile_source: bootfile_source,
             agents_online: '',
             debug: false,
             board_map: [:],
@@ -45,8 +54,8 @@ def setup_agents() {
       node(agent_name) {
         stage('Query agents') {
           setupAgent("nebula")
+          // Get necessary configuration for basic work
           board = nebula("update-config board-config board-name")
-          println("BOARD: "+board)
           board_map[agent_name] = board
         }
       }
@@ -58,18 +67,10 @@ def setup_agents() {
       parallel jobs
   }
 
-  println(board_map)
   gauntEnv.board_map = board_map
   (agents, boards) = splitMap(board_map)
   gauntEnv.agents = agents
   gauntEnv.boards = boards
-}
-
-def test_stage(board,ip) {
-  stage("Test"){
-    println("IP: "+ip)
-    println("board: "+board)
-  }
 }
 
 def stage_library(String stage_name){
@@ -101,10 +102,10 @@ def stage_library(String stage_name){
             dir("pyadi-iio")
             {
                 sh "ls"
-                run("pip3 install -r requirements.txt")
-                run("pip3 install -r requirements_dev.txt")
-                run("pip3 install pylibiio")
-                run("python3 -m pytest -v -s --uri='ip:"+ip+"' -m "+board.replaceAll("-","_"))
+                run_i("pip3 install -r requirements.txt")
+                run_i("pip3 install -r requirements_dev.txt")
+                run_i("pip3 install pylibiio")
+                run_i("python3 -m pytest -v -s --uri='ip:"+ip+"' -m "+board.replaceAll("-","_"))
             }
           }
         }
@@ -118,9 +119,7 @@ def stage_library(String stage_name){
 }
 
 def add_stage(cls) {
-
   gauntEnv.stages.add(cls)
-
 }
 
 def run_agents() {
@@ -137,13 +136,10 @@ def run_agents() {
 
     jobs[board] = {
       node(agent) {
-
         for (k=0; k<num_stages; k++)
           gauntEnv.stages[k].call()
-
       }
     }
-
   }
 
   stage('Update and Test') {
@@ -269,8 +265,8 @@ private def setupAgent(Object... args){
     }
 }
 
-/*
-private def run(cmd){
+
+private def run_i(cmd){
     if (checkOs()=="Windows") {
         bat cmd
     }
@@ -278,4 +274,3 @@ private def run(cmd){
         sh cmd
     }
 }
-*/
