@@ -28,6 +28,7 @@ def construct(List dependencies, hdlBranch, linuxBranch, bootfile_source){
             stages: [],
             agents: '',
             boards: '',
+            required_hardware: [],
             setup_called: false,
             configure_called: false
     ]
@@ -148,9 +149,34 @@ def run_agents() {
 
 }
 
+/**
+ * Set list of required devices for test
+ * Input must be a list of strings
+ * Strings must be associated with a board configuration name.
+ * For example: zynq-zc702-adv7511-ad9361-fmcomms2-3
+ */
+def set_required_hardware(List board_names) {
+ assert board_names instanceof java.util.List
+ gauntEnv.required_hardware = board_names
+}
+
+def check_required_hardware() {
+ 
+ def s = required_hardware.size();
+ def b = gauntEnv.boards.size();
+ 
+ if (s>0) {
+  for(i=0; i<s; s++) {
+   if (! gauntEnv.boards.contains(required_hardware[i]) )
+    error(required_hardware[i]+' not found in harness. Failing pipeline')
+  }  
+ }
+}
+
 
 def run_stages() {
   setup_agents()
+  check_required_hardware()
   run_agents()
 }
 
