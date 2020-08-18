@@ -161,6 +161,10 @@ def set_required_hardware(List board_names) {
  gauntEnv.required_hardware = board_names
 }
 
+def set_nebula_debug(nebula_debug) {
+ gauntEnv.nebula_debug = nebula_debug;
+}
+
 private def check_required_hardware() {
  
  def s = gauntEnv.required_hardware.size();
