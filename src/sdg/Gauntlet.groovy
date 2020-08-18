@@ -105,7 +105,7 @@ def stage_library(String stage_name){
                 run_i("pip3 install -r requirements.txt")
                 run_i("pip3 install -r requirements_dev.txt")
                 run_i("pip3 install pylibiio")
-                run_i("python3 -m pytest -v -s --uri='ip:"+ip+"' -m "+board.replaceAll("-","_"))
+                run_i("python3 -m pytest -v -k 'not stress' -s --uri='ip:"+ip+"' -m "+board.replaceAll("-","_"))
             }
           }
         }
@@ -164,8 +164,6 @@ private def splitMap(map){
         keys.add(entry.key)
         values.add(entry.value)
     }
-
-
     return [keys, values];
 }
 
@@ -211,7 +209,6 @@ private def nebula(cmd, full=false, show_log=false){
     else {
         script_out = sh(script: cmd, returnStdout: true).trim()
     }
-    println(script_out)
     // Remove lines
     if (!full){
         lines = script_out.split("\n");
@@ -228,8 +225,6 @@ private def nebula(cmd, full=false, show_log=false){
             added = added + 1;
         }
     }
-
-    println(out)
     return out
 }
 
