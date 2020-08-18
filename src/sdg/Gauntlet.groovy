@@ -164,13 +164,12 @@ def check_required_hardware() {
  
  def s = gauntEnv.required_hardware.size();
  def b = gauntEnv.boards.size();
- 
- if (s>0) {
-  for(i=0; i<s; s++) {
-   if (! gauntEnv.boards.contains(gauntEnv.required_hardware[i]) )
-    error(gauntEnv.required_hardware[i]+' not found in harness. Failing pipeline')
-  }  
+
+ for(i=0; i<s; i++) {
+  if (! gauntEnv.boards.contains(gauntEnv.required_hardware[i]) )
+   error(gauntEnv.required_hardware[i]+' not found in harness. Failing pipeline')
  }
+ 
 }
 
 
