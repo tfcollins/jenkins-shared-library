@@ -162,7 +162,7 @@ def set_required_hardware(List board_names) {
 
 def check_required_hardware() {
  
- def s = required_hardware.size();
+ def s = gauntEnv.required_hardware.size();
  def b = gauntEnv.boards.size();
  
  if (s>0) {
