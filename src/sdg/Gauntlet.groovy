@@ -160,16 +160,26 @@ def set_required_hardware(List board_names) {
  gauntEnv.required_hardware = board_names
 }
 
-def check_required_hardware() {
+private def check_required_hardware() {
  
  def s = gauntEnv.required_hardware.size();
  def b = gauntEnv.boards.size();
-
+ def filtered_board_list = [];
+ def filtered_agent_list = [];
+ 
  for(i=0; i<s; i++) {
   if (! gauntEnv.boards.contains(gauntEnv.required_hardware[i]) )
    error(gauntEnv.required_hardware[i]+' not found in harness. Failing pipeline')
+  // Filter out
+  def indx = indexOf(gauntEnv.required_hardware[i]) 
+  filtered_board_list.add(gauntEnv.boards(indx));
+  filtered_agent_list.add(gauntEnv.agents(indx));
  }
- 
+ // Update to filtered lists
+ if (s>0) {
+  gauntEnv.boards = filtered_board_list;
+  gauntEnv.agents = filtered_agent_list;
+ }
 }
 
 
