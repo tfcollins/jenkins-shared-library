@@ -131,6 +131,16 @@ def run_agents() {
   def jobs = [:]
   def num_boards = gauntEnv.boards.size()
 
+  def oneNode = { agent,num_stages,stages  ->
+     def k;
+     node(agent) {
+        for (k=0; k<num_stages; k++) {
+          println("Running stage: "+k.toString());
+          stages[k].call();
+        }
+     }
+  }
+ 
  
   for (i=0; i<num_boards; i++) {
 
@@ -141,7 +151,7 @@ def run_agents() {
    
     println("Agent: "+agent+" Board: "+board)
     println("Number of stages to run: "+num_stages.toString())
-
+    /*
     jobs[agent+"-"+board] = {
       node(agent) {
         for (k=0; k<num_stages; k++) {
@@ -150,6 +160,10 @@ def run_agents() {
         }
       }
     }
+    */
+   
+    jobs[agent+"-"+board] = oneNode(agent,num_stages,stages);
+   
   }
 
   stage('Update and Test') {
