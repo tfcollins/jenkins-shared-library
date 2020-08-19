@@ -162,7 +162,7 @@ def run_agents() {
     }
     */
    
-    jobs[agent+"-"+board] = oneNode(agent,num_stages,stages);
+   jobs[agent+"-"+board] = { oneNode(agent,num_stages,stages) };
    
   }
 
