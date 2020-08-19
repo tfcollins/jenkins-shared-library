@@ -144,8 +144,10 @@ def run_agents() {
 
     jobs[agent+"-"+board] = {
       node(agent) {
-        for (k=0; k<num_stages; k++)
-          stages[k].call()
+        for (k=0; k<num_stages; k++) {
+          println("Running stage: "+k.toString());
+          stages[k].call();
+        }
       }
     }
   }
