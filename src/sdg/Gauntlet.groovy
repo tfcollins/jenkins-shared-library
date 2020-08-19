@@ -130,7 +130,7 @@ def run_agents() {
   // Start stages for each node with a board
   def jobs = [:]
   def num_stages = gauntEnv.stages.size()
-  println("Number of stages to run: "+toString(num_stages))
+  println("Number of stages to run: "+num_stages.toString())
  
   for (i=0; i<num_stages; i++) {
 
