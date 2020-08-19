@@ -82,6 +82,7 @@ def stage_library(String stage_name){
       println("Added Stage UpdateBOOTFiles")
       cls = {
         stage("Update BOOT Files") {
+          board = nebula("update-config board-config board-name")
           nebula("dl.bootfiles --design-name="+board)
           nebula("manager.update-boot-files --folder=outs")
         }
@@ -99,11 +100,11 @@ def stage_library(String stage_name){
       cls = {
           stage('Run Python Tests') {
             ip = nebula("uart.get-ip")
+            board = nebula("update-config board-config board-name")
             println("IP: "+ip)
             sh "git clone https://github.com/analogdevicesinc/pyadi-iio.git"
             dir("pyadi-iio")
             {
-                sh "ls"
                 run_i("pip3 install -r requirements.txt")
                 run_i("pip3 install -r requirements_dev.txt")
                 run_i("pip3 install pylibiio")
@@ -136,7 +137,7 @@ def run_agents() {
 
     println("Agent: "+agent+" Board: "+board)
 
-    jobs[board] = {
+    jobs[agent+"-"+board] = {
       node(agent) {
         for (k=0; k<num_stages; k++)
           gauntEnv.stages[k].call()
