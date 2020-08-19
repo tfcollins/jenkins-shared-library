@@ -137,6 +137,7 @@ def run_agents() {
 
     def agent = gauntEnv.agents[i]
     def board = gauntEnv.boards[i]
+    def stages = gauntEnv.stages;
 
     println("Agent: "+agent+" Board: "+board)
 
