@@ -135,7 +135,6 @@ def run_agents() {
      def k;
      node(agent) {
         for (k=0; k<num_stages; k++) {
-          println("Running stage: "+k.toString());
           stages[k].call();
         }
      }
