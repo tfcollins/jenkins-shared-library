@@ -96,6 +96,16 @@ def stage_library(String stage_name){
         }
       };
       break;
+    case "LinuxTests":
+      println("Added Stage LinuxTests")
+      cls = {
+        stage("Linux Tests") {
+          ip = nebula("uart.get-ip")
+          nebula("net.check-dmesg --ip='"+ip+"'")
+          nebula('driver.check-iio-devices --uri="ip:'+ip+'"')
+        }
+      };
+      break;
     case "PyADITests":
       cls = {
           stage('Run Python Tests') {
