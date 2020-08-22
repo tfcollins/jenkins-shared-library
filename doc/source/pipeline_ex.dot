@@ -1,0 +1,55 @@
+digraph {
+
+
+    rankdir=LR;
+    //size="30,30";
+    ratio = fill;
+
+    "START\n(master)"
+    "Query Node\n(pi4a-cluj)" [peripheries=3]
+    "Query Node\n(pi4b-cluj)" [peripheries=3]
+    "Query Node\n(pi4c-cluj)" [peripheries=3]
+    "Check Board\nConfigurations\n(master)"
+    "Update Boot\n(pi4a-cluj-zed-fmcomms2)"
+    "Update Boot\n(pi4b-cluj-zc706-daq2)"
+    "Update Boot\n(pi4c-cluj-pluto)"
+    "Collect Logs\n(pi4a-cluj-zed-fmcomms2)"
+    "Collect Logs\n(pi4b-cluj-zc706-daq2)"
+    "Collect Logs\n(pi4c-cluj-pluto)"
+    "Run Linux Checks\n(pi4a-cluj-zed-fmcomms2)"
+    "Run Linux Checks\n(pi4b-cluj-zc706-daq2)"
+    "Run Linux Checks\n(pi4c-cluj-pluto)"
+    "Run Python Tests\n(pi4a-cluj-zed-fmcomms2)"
+    "Run Python Tests\n(pi4b-cluj-zc706-daq2)"
+    "Run Python Tests\n(pi4c-cluj-pluto)"
+    "Process\nLogs\n(master)"
+
+    "START\n(master)" -> "Query Node\n(pi4a-cluj)"
+    "START\n(master)" -> "Query Node\n(pi4b-cluj)"
+    "START\n(master)" -> "Query Node\n(pi4c-cluj)"
+
+    "Query Node\n(pi4a-cluj)" -> "Check Board\nConfigurations\n(master)"
+    "Query Node\n(pi4b-cluj)" -> "Check Board\nConfigurations\n(master)"
+    "Query Node\n(pi4c-cluj)" -> "Check Board\nConfigurations\n(master)"
+
+    "Check Board\nConfigurations\n(master)" -> "Update Boot\n(pi4a-cluj-zed-fmcomms2)"
+    "Check Board\nConfigurations\n(master)" -> "Update Boot\n(pi4b-cluj-zc706-daq2)"
+    "Check Board\nConfigurations\n(master)" -> "Update Boot\n(pi4c-cluj-pluto)"
+
+    "Update Boot\n(pi4a-cluj-zed-fmcomms2)" -> "Run Linux Checks\n(pi4a-cluj-zed-fmcomms2)"
+    "Update Boot\n(pi4b-cluj-zc706-daq2)" -> "Run Linux Checks\n(pi4b-cluj-zc706-daq2)"
+    "Update Boot\n(pi4c-cluj-pluto)" -> "Run Linux Checks\n(pi4c-cluj-pluto)"
+
+    "Run Linux Checks\n(pi4a-cluj-zed-fmcomms2)" -> "Run Python Tests\n(pi4a-cluj-zed-fmcomms2)"
+    "Run Linux Checks\n(pi4b-cluj-zc706-daq2)" -> "Run Python Tests\n(pi4b-cluj-zc706-daq2)"
+    "Run Linux Checks\n(pi4c-cluj-pluto)" -> "Run Python Tests\n(pi4c-cluj-pluto)"
+
+    "Run Python Tests\n(pi4a-cluj-zed-fmcomms2)" -> "Collect Logs\n(pi4a-cluj-zed-fmcomms2)"
+    "Run Python Tests\n(pi4b-cluj-zc706-daq2)" -> "Collect Logs\n(pi4b-cluj-zc706-daq2)"
+    "Run Python Tests\n(pi4c-cluj-pluto)" -> "Collect Logs\n(pi4c-cluj-pluto)"
+
+    "Collect Logs\n(pi4a-cluj-zed-fmcomms2)" -> "Process\nLogs\n(master)"
+    "Collect Logs\n(pi4b-cluj-zc706-daq2)" -> "Process\nLogs\n(master)"
+    "Collect Logs\n(pi4c-cluj-pluto)" -> "Process\nLogs\n(master)"
+
+}
