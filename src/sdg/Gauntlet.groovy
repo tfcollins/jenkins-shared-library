@@ -100,6 +100,7 @@ def stage_library(String stage_name){
       println("Added Stage LinuxTests")
       cls = {
         stage("Linux Tests") {
+          run_i("pip3 install pylibiio")
           ip = nebula("uart.get-ip")
           nebula("net.check-dmesg --ip='"+ip+"'")
           nebula('driver.check-iio-devices --uri="ip:'+ip+'"')
