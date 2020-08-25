@@ -83,7 +83,7 @@ def stage_library(String stage_name) {
             println('Added Stage UpdateBOOTFiles')
             cls = {
                 stage('Update BOOT Files') {
-                    board = nebula('update-config board-config board-name')
+                    def board = nebula('update-config board-config board-name')
                     nebula('dl.bootfiles --design-name=' + board)
                     nebula('manager.update-boot-files --folder=outs')
                 }
@@ -103,7 +103,7 @@ def stage_library(String stage_name) {
                 try {
                     stage('Linux Tests') {
                         run_i('pip3 install pylibiio')
-                        ip = nebula('uart.get-ip')
+                        def ip = nebula('uart.get-ip')
                         nebula("net.check-dmesg --ip='"+ip+"'")
                         nebula('driver.check-iio-devices --uri="ip:'+ip+'"')
                     }
@@ -116,8 +116,8 @@ def stage_library(String stage_name) {
     case 'PyADITests':
             cls = {
                 stage('Run Python Tests') {
-                    ip = nebula('uart.get-ip')
-                    board = nebula('update-config board-config board-name')
+                    def ip = nebula('uart.get-ip')
+                    def board = nebula('update-config board-config board-name')
                     println('IP: ' + ip)
                     sh 'git clone https://github.com/analogdevicesinc/pyadi-iio.git'
                     dir('pyadi-iio')
