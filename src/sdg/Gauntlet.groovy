@@ -100,12 +100,17 @@ def stage_library(String stage_name) {
     case 'LinuxTests':
             println('Added Stage LinuxTests')
             cls = {
-                stage('Linux Tests') {
-                    run_i('pip3 install pylibiio')
-                    ip = nebula('uart.get-ip')
-                    nebula("net.check-dmesg --ip='"+ip+"'")
-                    nebula('driver.check-iio-devices --uri="ip:'+ip+'"')
+                try {
+                    stage('Linux Tests') {
+                        run_i('pip3 install pylibiio')
+                        ip = nebula('uart.get-ip')
+                        nebula("net.check-dmesg --ip='"+ip+"'")
+                        nebula('driver.check-iio-devices --uri="ip:'+ip+'"')
+                    }
                 }
+        finally {
+                    archiveArtifacts artifacts: '*.log', followSymlinks: false, allowEmptyArchive: true
+        }
       };
             break
     case 'PyADITests':
@@ -141,7 +146,6 @@ def stage_library(String stage_name) {
 def add_stage(cls) {
     gauntEnv.stages.add(cls)
 }
-
 
 private def run_agents() {
     // Start stages for each node with a board
