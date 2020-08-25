@@ -22,36 +22,33 @@ List getMatrixAxes(Map matrix_axes) {
     axes.combinations()*.sum()
 }
 
-
 List genMatrixDockerBuilds(Map matrix_axes, String agent_name) {
+    List axes = getMatrixAxes(matrix_axes).findAll { axis ->
+        (axis['DOCKERIMAGE'].contains('ubuntu') && axis['DEPENDENCYFUNC'] == 'ubuntu')
+    }
 
-	List axes = getMatrixAxes(matrix_axes).findAll { axis ->
-	    (axis['DOCKERIMAGE'].contains('ubuntu') && axis['DEPENDENCYFUNC'] == 'ubuntu')
-	}
+    def branches = [:]
+    for ( i = 0; i < axes.size(); i++ ) {
+        Map axis = axes[i]
+        // Enumerate variables setters
+        List axisEnv = axis.collect { k, v ->
+            "${k}=${v}"
+        }
+        // Split out top level variables
+        def dimage = axis['DOCKERIMAGE']
+        def libiiobranch = axis['LIBIIOBRANCHES']
+        String branchName = "os:${axis['DOCKERIMAGE']} && libiio:${axis['LIBIIOBRANCHES']}"
 
-	def branches = [:]
-	for ( i=0; i<axes.size(); i++ ) {
-	  Map axis = axes[i]
-	  // Enumerate variables setters
-	  List axisEnv = axis.collect { k, v ->
-	      "${k}=${v}"
-	  }
-	  // Split out top level variables
-	  def dimage = axis['DOCKERIMAGE']
-	  def libiiobranch = axis['LIBIIOBRANCHES']
-	  String branchName = "os:${axis['DOCKERIMAGE']} && libiio:${axis['LIBIIOBRANCHES']}"
-	  
-	  branches[branchName] = {
-	    node (agent_name) {
-	      withEnv(axisEnv) {
-		docker.image(dimage).inside {
-		      sh 'DEBIAN_FRONTEND="noninteractive" apt-get -qq update'
-		      sh 'rm -rf pyadi-iio || true'
-		      sh 'git clone https://github.com/analogdevicesinc/pyadi-iio.git'
-		}
-	    }
-	    }
-	  }
-	}
+        branches[branchName] = {
+            node (agent_name) {
+                withEnv(axisEnv) {
+                    docker.image(dimage).inside {
+                        sh 'DEBIAN_FRONTEND="noninteractive" apt-get -qq update'
+                        sh 'rm -rf pyadi-iio || true'
+                        sh 'git clone https://github.com/analogdevicesinc/pyadi-iio.git'
+                    }
+                }
+            }
+        }
+    }
 }
-

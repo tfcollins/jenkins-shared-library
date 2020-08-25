@@ -28,34 +28,29 @@ buildParallelWithDocker(branches2, dockerArgs2){
 }
 */
 
-def call(branchNames, dockerHost, dockerArgs, dockerstages){
+def call(branchNames, dockerHost, dockerArgs, dockerstages) {
+    def tests = [:]
 
-  def tests = [:]
-    
-  if (dockerArgs instanceof List) {
-      dockerArgs = dockerArgs.join(" ")
-  }
+    if (dockerArgs instanceof List) {
+        dockerArgs = dockerArgs.join(' ')
+    }
 
-  for ( i=0; i<branchNames.size(); i++ ) {
+    for ( i = 0; i < branchNames.size(); i++ ) {
+        def branchName = branchNames[i]
 
-      def branchName = branchNames[i]
+        tests[branchName] = {
+            node (label: dockerHost) {
+                stage (branchName) {
+                    docker.image('tfcollins/hdl-ci:latest').inside(dockerArgs) {
+                        sh 'chmod +x /usr/local/bin/docker-entrypoint.sh'
+                        sh '/usr/local/bin/docker-entrypoint.sh'
+                        dockerstages(branchName)
+                    }
+                    cleanWs()
+                }
+            }
+        }
+    }
 
-      tests[branchName] = {
-          node (label: dockerHost) {
-
-              stage (branchName) {
-                  docker.image('tfcollins/hdl-ci:latest').inside(dockerArgs) {
-                    sh 'chmod +x /usr/local/bin/docker-entrypoint.sh'
-                    sh '/usr/local/bin/docker-entrypoint.sh'
-                    dockerstages(branchName)
-                  }
-                  cleanWs()
-              }
-
-          }
-      }
-  }
-
-  parallel tests
-
+    parallel tests
 }

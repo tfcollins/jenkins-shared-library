@@ -1,15 +1,13 @@
 def call(project, message) {
-
-  if (project=='TransceiverToolbox') {
-    channel = '#matlab'
-  }
-  else if (project=='hdl') {
-    channel = '#hdl'
+    if (project == 'TransceiverToolbox') {
+        channel = '#matlab'
+    }
+  else if (project == 'hdl') {
+        channel = '#hdl'
   }
   else {
-    channel = '#random'
+        channel = '#random'
   }
 
-  slackSend(channel: channel, message: message)
-
+    slackSend(channel: channel, message: message)
 }
