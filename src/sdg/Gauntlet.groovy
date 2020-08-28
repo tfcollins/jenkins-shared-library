@@ -126,7 +126,8 @@ def stage_library(String stage_name) {
                         run_i('pip3 install -r requirements_dev.txt')
                         run_i('pip3 install pylibiio')
                         run_i('mkdir testxml')
-                        run_i("python3 -m pytest --junitxml=testxml/reports.xml -v -k 'not stress' -s --uri='ip:"+ip+"' -m " + board.replaceAll('-', '_'))
+                        board = board.replaceAll('-', '_') 
+                        run_i("python3 -m pytest --junitxml=testxml/" + board + "reports.xml -v -k 'not stress' -s --uri='ip:"+ip+"' -m " + board)
                         junit testResults: 'testxml/*.xml', allowEmptyResults: true
             }
                 }
