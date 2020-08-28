@@ -104,8 +104,13 @@ def stage_library(String stage_name) {
                     stage('Linux Tests') {
                         run_i('pip3 install pylibiio')
                         def ip = nebula('uart.get-ip')
+                        def board = nebula('update-config board-config board-name')
                         nebula("net.check-dmesg --ip='"+ip+"'")
                         nebula('driver.check-iio-devices --uri="ip:'+ip+'"')
+                        // Rename logs
+                        run_i("mv dmesg.log dmesg_" + board + ".log")
+                        run_i("mv dmesg_err.log dmesg_" + board + "_err.log")
+                        run_i("mv dmesg_warn.log dmesg_" + board + "_warn.log")
                     }
                 }
         finally {
@@ -127,7 +132,7 @@ def stage_library(String stage_name) {
                         run_i('pip3 install pylibiio')
                         run_i('mkdir testxml')
                         board = board.replaceAll('-', '_') 
-                        run_i("python3 -m pytest --junitxml=testxml/" + board + "reports.xml -v -k 'not stress' -s --uri='ip:"+ip+"' -m " + board)
+                        run_i("python3 -m pytest --junitxml=testxml/" + board + "_reports.xml -v -k 'not stress' -s --uri='ip:"+ip+"' -m " + board)
                         junit testResults: 'testxml/*.xml', allowEmptyResults: true
             }
                 }
