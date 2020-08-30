@@ -153,6 +153,20 @@ def add_stage(cls) {
     gauntEnv.stages.add(cls)
 }
 
+private def collect_logs() {
+ 
+    stage('Collect Logs') {
+        node('master') {
+            for (i = 0; i < num_boards; i++) {
+                def agent = gauntEnv.agents[i]
+                def board = gauntEnv.boards[i]
+                println("board: "+board)
+            }
+        }
+    }
+    
+}
+
 private def run_agents() {
     // Start stages for each node with a board
     def jobs = [:]
@@ -244,6 +258,7 @@ def run_stages() {
     setup_agents()
     check_required_hardware()
     run_agents()
+    collect_logs()
 }
 
 // Private methods
