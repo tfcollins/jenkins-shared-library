@@ -353,6 +353,7 @@ private def install_nebula() {
         }
     }
     else {
+        sh 'pip3 uninstall nebula -y || true'
         sh 'git clone https://github.com/tfcollins/nebula.git'
         dir('nebula')
         {
