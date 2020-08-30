@@ -85,7 +85,7 @@ def stage_library(String stage_name) {
                 stage('Update BOOT Files') {
                     def board = nebula('update-config board-config board-name')
                     nebula('dl.bootfiles --design-name=' + board)
-                    nebula('manager.update-boot-files --folder=outs')
+                    nebula('manager.update-boot-files --folder=outs', full=false, show_log=true)
                 }
       };
             break
