@@ -169,7 +169,7 @@ private def collect_logs() {
             for (i = 0; i < num_boards; i++) {
                 def agent = gauntEnv.agents[i]
                 def board = gauntEnv.boards[i]
-                println("board: "+board)
+                println("Processing log for board: "+board+" ("+agent+")")
             }
         }
     }
