@@ -141,7 +141,7 @@ def stage_library(String stage_name) {
                 }
                 finally
                 {
-                    junit testResults: 'testxml/*.xml', allowEmptyResults: true                    
+                    junit testResults: 'pyadi-iio/testxml/*.xml', allowEmptyResults: true                    
                 }
             }
             break
