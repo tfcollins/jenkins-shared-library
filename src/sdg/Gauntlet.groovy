@@ -161,9 +161,11 @@ def add_stage(cls) {
 }
 
 private def collect_logs() {
- 
-    stage('Collect Logs') {
-        node('master') {
+    
+    def num_boards = gauntEnv.boards.size()
+    
+    node('master') {
+        stage('Collect Logs') {
             for (i = 0; i < num_boards; i++) {
                 def agent = gauntEnv.agents[i]
                 def board = gauntEnv.boards[i]
