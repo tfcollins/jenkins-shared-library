@@ -27,6 +27,7 @@ def construct(List dependencies, hdlBranch, linuxBranch, bootfile_source) {
             required_hardware: [],
             setup_called: false,
             nebula_debug: false,
+            nebula_local_fs_source_root: '/var/lib/tftpboot',
             configure_called: false
     ]
 
@@ -84,7 +85,7 @@ def stage_library(String stage_name) {
             cls = {
                 stage('Update BOOT Files') {
                     def board = nebula('update-config board-config board-name')
-                    nebula('dl.bootfiles --design-name=' + board)
+                    nebula('dl.bootfiles --design-name=' + board + ' --source-root='=gauntEnv.nebula_local_fs_source_root)
                     nebula('manager.update-boot-files --folder=outs', full=false, show_log=true)
                 }
       };
@@ -234,6 +235,14 @@ def set_required_hardware(List board_names) {
  */
 def set_nebula_debug(nebula_debug) {
     gauntEnv.nebula_debug = nebula_debug
+}
+
+/**
+ * Set nebula downloader local_fs source_path.
+ * @param nebula_local_fs_source_root String of path
+ */
+def set_nebula_local_fs_source_root(nebula_local_fs_source_root) {
+    gauntEnv.nebula_local_fs_source_root = nebula_local_fs_source_root
 }
 
 private def check_required_hardware() {
