@@ -1,0 +1,116 @@
+# Project information
+site_name: Gauntlet
+site_name: "Gaunlet: SDG Jenkins Shared Library"
+site_url: https://github.com/tfcollins/gauntlet
+site_author: Travis Collins
+site_description: >-
+  Create a branded static site from a set of Markdown files to host the
+  documentation of your Open Source or commercial project – customizable,
+  searchable, mobile-friendly, 40+ languages
+# Repository
+repo_name: tfcollins/gauntlet
+repo_url: https://github.com/tfcollins/gauntlet
+edit_uri: ""
+
+# Copyright
+copyright: Copyright &copy; 2020 Travis Collins
+
+theme:
+  name: material
+  custom_dir: overrides
+  icon:
+    logo: fontawesome/solid/chess-rook
+    #logo: fontawesome/solid/fist-raised
+
+  # Don't include MkDocs' JavaScript
+  include_search_page: false
+  search_index_only: true
+
+  # Default values, taken from mkdocs_theme.yml
+  language: en
+  features:
+    - tabs
+  palette:
+    scheme: default
+    primary: indigo
+    accent: indigo
+  font:
+    text: Roboto
+    code: Roboto Mono
+    #  favicon: assets/favicon.png
+    #  icon:
+    #    logo: logo
+
+# Plugins
+plugins:
+  - search
+  - awesome-pages
+    #  - redirects:
+    #      redirect_maps:
+  - minify:
+      minify_html: true
+
+# Customization
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/squidfunk
+    - icon: fontawesome/brands/gitter
+      link: https://gitter.im/squidfunk/mkdocs-material
+    - icon: fontawesome/brands/docker
+      link: https://hub.docker.com/r/squidfunk/mkdocs-material/
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/squidfunk
+    - icon: fontawesome/brands/linkedin
+      link: https://linkedin.com/in/squidfunk/
+    - icon: fontawesome/brands/instagram
+      link: https://instagram.com/squidfunk
+
+# Extensions
+markdown_extensions:
+  - markdown.extensions.admonition
+  - markdown.extensions.attr_list
+  - markdown.extensions.def_list
+  - markdown.extensions.footnotes
+  - markdown.extensions.meta
+  - markdown.extensions.toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      repo_url_shorthand: true
+      user: squidfunk
+      repo: mkdocs-material
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      check_paths: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+
+nav:
+  - Home: index.md
+  - Pipelines:
+    - Introduction by example: pipe_intro.md
+    - Stage Library: pipe_stage_lib.md
+  - About: about.md
+
