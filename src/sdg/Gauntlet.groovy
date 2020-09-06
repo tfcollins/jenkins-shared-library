@@ -396,7 +396,7 @@ private def install_libiio() {
         }
     }
     else {
-        sh 'git clone https://github.com/analogdevicesinc/libiio.git'
+        sh 'git clone -b v0.19 https://github.com/analogdevicesinc/libiio.git'
         dir('libiio')
         {
             sh 'mkdir build'
@@ -406,6 +406,7 @@ private def install_libiio() {
                 sh 'cmake ..'
                 sh 'make'
                 sh 'make install'
+                sh 'ldconfig'
             }
         }
     }
