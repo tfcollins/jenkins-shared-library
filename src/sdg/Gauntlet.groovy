@@ -381,12 +381,45 @@ private def install_nebula() {
     }
 }
 
+private def install_libiio() {
+    if (checkOs() == 'Windows') {
+        bat 'git clone https://github.com/analogdevicesinc/libiio.git'
+        dir('libiio')
+        {
+            bat 'mkdir build'
+            bat('build')
+            {
+                //sh 'cmake .. -DPYTHON_BINDINGS=ON'
+                bat 'cmake ..'
+                bat 'cmake --build . --config Release --install'
+            }
+        }
+    }
+    else {
+        sh 'git clone https://github.com/analogdevicesinc/libiio.git'
+        dir('libiio')
+        {
+            sh 'mkdir build'
+            dir('build')
+            {
+                //sh 'cmake .. -DPYTHON_BINDINGS=ON'
+                sh 'cmake ..'
+                sh 'make'
+                sh 'make install'
+            }
+        }
+    }
+}
+
 private def setupAgent(Object... args) {
     try {
         for (i = 0; i < args.length; i++) {
             println(args[i])
             if (args[i] == 'nebula') {
                 install_nebula()
+            }
+            if (args[i] == 'libiio') {
+                install_libiio()
             }
         }
     }
