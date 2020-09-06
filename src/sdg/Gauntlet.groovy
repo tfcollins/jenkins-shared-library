@@ -54,7 +54,7 @@ private def setup_agents() {
         jobs[agent_name] = {
             node(agent_name) {
                 stage('Query agents') {
-                    setupAgent('nebula','libiio')
+                    setupAgent(['nebula','libiio'])
                     // Get necessary configuration for basic work
                     board = nebula('update-config board-config board-name')
                     board_map[agent_name] = board
@@ -412,14 +412,15 @@ private def install_libiio() {
     }
 }
 
-private def setupAgent(Object... args) {
+private def setupAgent(deps) {
     try {
-        for (i = 0; i < args.length; i++) {
-            println(args[i])
-            if (args[i] == 'nebula') {
+        def i;
+        for (i = 0; i < deps.size; i++) {
+            println(deps[i])
+            if (deps[i] == 'nebula') {
                 install_nebula()
             }
-            if (args[i] == 'libiio') {
+            if (deps[i] == 'libiio') {
                 install_libiio()
             }
         }
