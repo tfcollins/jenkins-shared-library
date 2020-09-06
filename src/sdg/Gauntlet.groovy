@@ -54,7 +54,7 @@ private def setup_agents() {
         jobs[agent_name] = {
             node(agent_name) {
                 stage('Query agents') {
-                    setupAgent('nebula')
+                    setupAgent('nebula','libiio')
                     // Get necessary configuration for basic work
                     board = nebula('update-config board-config board-name')
                     board_map[agent_name] = board
