@@ -250,7 +250,7 @@ def set_nebula_local_fs_source_root(nebula_local_fs_source_root) {
  * Set pyadi branch name to use for testing.
  * @param pyadi_branch String of branch name
  */
-def set_nebula_local_fs_source_root(pyadi_branch) {
+def set_pyadi_branch(pyadi_branch) {
     gauntEnv.pyadiBranch = pyadi_branch
 }
 
