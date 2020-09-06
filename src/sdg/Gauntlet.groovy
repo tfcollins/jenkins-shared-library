@@ -17,6 +17,7 @@ def construct(List dependencies, hdlBranch, linuxBranch, bootfile_source) {
             dependencies: dependencies,
             hdlBranch: hdlBranch,
             linuxBranch: linuxBranch,
+            pyadiBranch: 'master',
             bootfile_source: bootfile_source,
             agents_online: '',
             debug: false,
@@ -128,7 +129,7 @@ def stage_library(String stage_name) {
                     def ip = nebula('uart.get-ip')
                     def board = nebula('update-config board-config board-name')
                     println('IP: ' + ip)
-                    sh 'git clone https://github.com/analogdevicesinc/pyadi-iio.git'
+                    sh 'git clone -b "' + gauntEnv.pyadiBranch + '" https://github.com/analogdevicesinc/pyadi-iio.git'
                     dir('pyadi-iio')
             {
                         run_i('pip3 install -r requirements.txt')
@@ -244,6 +245,15 @@ def set_nebula_debug(nebula_debug) {
 def set_nebula_local_fs_source_root(nebula_local_fs_source_root) {
     gauntEnv.nebula_local_fs_source_root = nebula_local_fs_source_root
 }
+
+/**
+ * Set pyadi branch name to use for testing.
+ * @param pyadi_branch String of branch name
+ */
+def set_nebula_local_fs_source_root(pyadi_branch) {
+    gauntEnv.pyadiBranch = pyadi_branch
+}
+
 
 private def check_required_hardware() {
     def s = gauntEnv.required_hardware.size()
