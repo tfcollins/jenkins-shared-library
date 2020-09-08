@@ -334,7 +334,7 @@ private def checkOs() {
     }
 }
 
-private def nebula(cmd, full=false, show_log=false) {
+def nebula(cmd, full=false, show_log=false) {
     // full=false
     if (gauntEnv.nebula_debug) {
         show_log = true
