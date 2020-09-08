@@ -1,0 +1,36 @@
+def call(cmd, full=false, show_log=false) {
+    // full=false
+    if (gauntEnv.nebula_debug) {
+        show_log = true
+    }
+    if (show_log) {
+        cmd = 'show-log ' + cmd
+    }
+    cmd = 'nebula ' + cmd
+    if (checkOs() == 'Windows') {
+        script_out = bat(script: cmd, returnStdout: true).trim()
+    }
+    else {
+        script_out = sh(script: cmd, returnStdout: true).trim()
+    }
+    // Remove lines
+    if (!full) {
+        lines = script_out.split('\n')
+        if (lines.size() == 1) {
+            return script_out
+        }
+        out = ''
+        added = 0
+        for (i = 1; i < lines.size(); i++) {
+            if (lines[i].contains('WARNING')) {
+                continue
+            }
+            if (added > 0) {
+                out = out + '\n'
+            }
+            out = out + lines[i]
+            added = added + 1
+        }
+    }
+    return out
+}
