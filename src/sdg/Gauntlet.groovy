@@ -88,6 +88,8 @@ def stage_library(String stage_name) {
                     def board = nebula('update-config board-config board-name')
                     nebula('dl.bootfiles --design-name=' + board + ' --source-root=' + gauntEnv.nebula_local_fs_source_root)
                     nebula('manager.update-boot-files --design-name=' + board + ' --folder=outs', full=false, show_log=true)
+                    if (board=="pluto")
+                        nebula('uart.set-local-nic-ip-from-usbdev')
                 }
       };
             break
