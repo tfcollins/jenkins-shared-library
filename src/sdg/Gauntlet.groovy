@@ -107,7 +107,8 @@ def stage_library(String stage_name) {
                 try {
                     stage('Linux Tests') {
                         run_i('pip3 install pylibiio')
-                        def ip = nebula('uart.get-ip')
+                        //def ip = nebula('uart.get-ip')
+                        def ip = nebula('update-config network-config dutip')
                         def board = nebula('update-config board-config board-name')
                         nebula("net.check-dmesg --ip='"+ip+"'")
                         nebula('driver.check-iio-devices --uri="ip:'+ip+'"')
@@ -128,7 +129,8 @@ def stage_library(String stage_name) {
                 try
                 {
                 stage('Run Python Tests') {
-                    def ip = nebula('uart.get-ip')
+                    //def ip = nebula('uart.get-ip')
+                    def ip = nebula('update-config network-config dutip')
                     def board = nebula('update-config board-config board-name')
                     println('IP: ' + ip)
                     sh 'git clone -b "' + gauntEnv.pyadiBranch + '" https://github.com/analogdevicesinc/pyadi-iio.git'
