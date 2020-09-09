@@ -87,7 +87,7 @@ def stage_library(String stage_name) {
                 stage('Update BOOT Files') {
                     def board = nebula('update-config board-config board-name')
                     nebula('dl.bootfiles --design-name=' + board + ' --source-root=' + gauntEnv.nebula_local_fs_source_root)
-                    nebula('manager.update-boot-files --folder=outs', full=false, show_log=true)
+                    nebula('manager.update-boot-files --design-name=' + board + ' --folder=outs', full=false, show_log=true)
                 }
       };
             break
