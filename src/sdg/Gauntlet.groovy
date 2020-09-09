@@ -9,15 +9,17 @@ gauntEnv
  * @param dependencies - List of strings which are names of dependencies
  * @param hdlBranch - String of name of hdl branch to use for bootfile source
  * @param linuxBranch - String of name of linux branch to use for bootfile source
+ * @param firmwareVersion - String of name of firmware version branch to use for pluto and m2k
  * @param bootfile_source - String location of bootfiles. Options: sftp, artifactory, http, local
  * @return constructed object
  */
-def construct(List dependencies, hdlBranch, linuxBranch, bootfile_source) {
+def construct(List dependencies, hdlBranch, linuxBranch, firmwareVersion, bootfile_source) {
     gauntEnv = [
             dependencies: dependencies,
             hdlBranch: hdlBranch,
             linuxBranch: linuxBranch,
             pyadiBranch: 'master',
+            firmwareVersion: firmwareVersion,
             bootfile_source: bootfile_source,
             agents_online: '',
             debug: false,
@@ -86,7 +88,10 @@ def stage_library(String stage_name) {
             cls = {
                 stage('Update BOOT Files') {
                     def board = nebula('update-config board-config board-name')
-                    nebula('dl.bootfiles --design-name=' + board + ' --source-root=' + gauntEnv.nebula_local_fs_source_root)
+                    if (board=="pluto")
+                        nebula('dl.bootfiles --design-name=' + board + ' --branch=' + gauntEnv.firmwareVersion)
+                    else
+                        nebula('dl.bootfiles --design-name=' + board + ' --source-root=' + gauntEnv.nebula_local_fs_source_root)
                     nebula('manager.update-boot-files --design-name=' + board + ' --folder=outs', full=false, show_log=true)
                     if (board=="pluto")
                         nebula('uart.set-local-nic-ip-from-usbdev')
