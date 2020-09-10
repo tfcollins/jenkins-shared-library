@@ -275,7 +275,7 @@ private def check_required_hardware() {
     def filtered_agent_list = []
 
     println("Found boards:")
-    for (k = 0; k < b; ++) {
+    for (k = 0; k < b; k++) {
         println("Agent: "+gauntEnv.agents[k]+" Board: "+gauntEnv.boards[k])
     }
     for (i = 0; i < s; i++) {
