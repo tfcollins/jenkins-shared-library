@@ -274,6 +274,10 @@ private def check_required_hardware() {
     def filtered_board_list = []
     def filtered_agent_list = []
 
+    println("Found boards:")
+    for (k = 0; k < b; ++) {
+        println("Agent: "+gauntEnv.agents[k]+" Board: "+gauntEnv.boards[k])
+    }
     for (i = 0; i < s; i++) {
         if (! gauntEnv.boards.contains(gauntEnv.required_hardware[i]) ) {
             error(gauntEnv.required_hardware[i] + ' not found in harness. Failing pipeline')
