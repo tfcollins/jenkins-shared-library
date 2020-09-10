@@ -60,7 +60,6 @@ private def setup_agents() {
                     setupAgent(['nebula','libiio'])
                     // Get necessary configuration for basic work
                     board = nebula('update-config board-config board-name')
-                    board = board.split(",")
                     board_map[agent_name] = board
                 }
             }
@@ -72,7 +71,7 @@ private def setup_agents() {
     }
 
     gauntEnv.board_map = board_map
-    (agents, boards) = splitMap(board_map)
+    (agents, boards) = splitMap(board_map,true)
     gauntEnv.agents = agents
     gauntEnv.boards = boards
 }
@@ -305,12 +304,27 @@ def run_stages() {
 
 // Private methods
 @NonCPS
-private def splitMap(map) {
+private def splitMap(map, do_split=false) {
     def keys = []
     def values = []
+    def tmp;
     for (entry in map) {
-        keys.add(entry.key)
-        values.add(entry.value)
+        if (do_split)
+        {
+            tmp = entry.value
+            tmp = tmp.split(",")
+
+            for (i=0;i<tmp.size();i++)
+            {
+                keys.add(entry.key)
+                values.add(tmp[i])
+            }
+        }
+        else
+        {
+            keys.add(entry.key)
+            values.add(entry.value)
+        }
     }
     return [keys, values]
 }
