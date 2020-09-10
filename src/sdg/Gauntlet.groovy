@@ -203,28 +203,24 @@ private def run_agents() {
 
     for (i = 0; i < num_boards; i++) {
         def agent = gauntEnv.agents[i]
-        def boards = gauntEnv.boards[i]
+        def board = gauntEnv.boards[i]
         def stages = gauntEnv.stages
         def num_stages = stages.size()
         
-        for(b = 0; b < boards.size(); b++ )
-        {
-            def board = boards[b];
-            println('Agent: ' + agent + ' Board: ' + board)
-            println('Number of stages to run: ' + num_stages.toString())
-    /*
-    jobs[agent+"-"+board] = {
-      node(agent) {
-        for (k=0; k<num_stages; k++) {
-          println("Running stage: "+k.toString());
-          stages[k].call();
-        }
-      }
+        println('Agent: ' + agent + ' Board: ' + board)
+        println('Number of stages to run: ' + num_stages.toString())
+/*
+jobs[agent+"-"+board] = {
+  node(agent) {
+    for (k=0; k<num_stages; k++) {
+      println("Running stage: "+k.toString());
+      stages[k].call();
     }
-    */
+  }
+}
+*/
 
-            jobs[agent + '-' + board] = { oneNode(agent, num_stages, stages) };
-        }
+        jobs[agent + '-' + board] = { oneNode(agent, num_stages, stages) };
     }
 
     stage('Update and Test') {
