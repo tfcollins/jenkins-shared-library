@@ -208,9 +208,9 @@ private def run_agents() {
         def stages = gauntEnv.stages
         def num_stages = stages.size()
         
-        for( String boards : board )
+        for(b = 0; b < boards.size(); b++ )
         {
-            println(values);
+            def board = boards[b];
             println('Agent: ' + agent + ' Board: ' + board)
             println('Number of stages to run: ' + num_stages.toString())
     /*
