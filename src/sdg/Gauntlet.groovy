@@ -60,6 +60,7 @@ private def setup_agents() {
                     setupAgent(['nebula','libiio'])
                     // Get necessary configuration for basic work
                     board = nebula('update-config board-config board-name')
+                    board = board.split(",")
                     board_map[agent_name] = board
                 }
             }
@@ -203,12 +204,15 @@ private def run_agents() {
 
     for (i = 0; i < num_boards; i++) {
         def agent = gauntEnv.agents[i]
-        def board = gauntEnv.boards[i]
+        def boards = gauntEnv.boards[i]
         def stages = gauntEnv.stages
         def num_stages = stages.size()
-
-        println('Agent: ' + agent + ' Board: ' + board)
-        println('Number of stages to run: ' + num_stages.toString())
+        
+        for( String boards : board )
+        {
+            println(values);
+            println('Agent: ' + agent + ' Board: ' + board)
+            println('Number of stages to run: ' + num_stages.toString())
     /*
     jobs[agent+"-"+board] = {
       node(agent) {
@@ -220,7 +224,8 @@ private def run_agents() {
     }
     */
 
-        jobs[agent + '-' + board] = { oneNode(agent, num_stages, stages) };
+            jobs[agent + '-' + board] = { oneNode(agent, num_stages, stages) };
+        }
     }
 
     stage('Update and Test') {
