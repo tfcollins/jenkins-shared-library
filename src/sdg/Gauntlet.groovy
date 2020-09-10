@@ -85,9 +85,10 @@ def stage_library(String stage_name) {
     switch (stage_name) {
     case 'UpdateBOOTFiles':
             println('Added Stage UpdateBOOTFiles')
-            cls = {
+            cls = { String board ->
                 stage('Update BOOT Files') {
-                    def board = nebula('update-config board-config board-name')
+                    println("Board name passed: "+board)
+                    //def board = nebula('update-config board-config board-name')
                     if (board=="pluto")
                         nebula('dl.bootfiles --design-name=' + board + ' --branch=' + gauntEnv.firmwareVersion)
                     else
@@ -192,11 +193,11 @@ private def run_agents() {
     def jobs = [:]
     def num_boards = gauntEnv.boards.size()
 
-    def oneNode = { agent, num_stages, stages  ->
+    def oneNode = { agent, num_stages, stages, board  ->
         def k
         node(agent) {
             for (k = 0; k < num_stages; k++) {
-                stages[k].call()
+                stages[k].call(board)
             }
         }
     }
@@ -220,7 +221,7 @@ jobs[agent+"-"+board] = {
 }
 */
 
-        jobs[agent + '-' + board] = { oneNode(agent, num_stages, stages) };
+        jobs[agent + '-' + board] = { oneNode(agent, num_stages, stages, board) };
     }
 
     stage('Update and Test') {
