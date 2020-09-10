@@ -197,6 +197,7 @@ private def run_agents() {
         def k
         node(agent) {
             for (k = 0; k < num_stages; k++) {
+                println("Stage called for board: "+board)
                 stages[k].call(board)
             }
         }
