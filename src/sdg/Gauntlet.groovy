@@ -321,7 +321,7 @@ private def splitMap(map, do_split=false) {
             for (i=0;i<tmp.size();i++)
             {
                 keys.add(entry.key)
-                values.add(tmp[i])
+                values.add(tmp[i].replaceAll(" ",""))
             }
         }
         else
