@@ -143,9 +143,11 @@ def stage_library(String stage_name) {
                         run_i('pip3 install -r requirements_dev.txt')
                         run_i('pip3 install pylibiio')
                         run_i('mkdir testxml')
-                        board = board.replaceAll('-', '_') 
-                        def ignore_all_filtered = " ; ret=\$?; [ \$ret = 5 ] && exit 0 || exit \$ret"
-                        run_i("python3 -m pytest --junitxml=testxml/" + board + "_reports.xml -v -k 'not stress' -s --uri='ip:"+ip+"' -m " + board + ignore_all_filtered)
+                        board = board.replaceAll('-', '_')
+                        cmd = "python3 -m pytest --junitxml=testxml/" + board + "_reports.xml -v -k 'not stress' -s --uri='ip:"+ip+"' -m " + board
+                        def statusCode = sh script:cmd, returnStatus:true
+                        if ((statusCode != 5) && (statusCode != 0)) // Ignore error 5 which means no tests were run
+                            error "Error code: "+statusCode.toString()
             }
                 }
                 }
