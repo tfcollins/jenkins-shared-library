@@ -144,7 +144,7 @@ def stage_library(String stage_name) {
                         run_i('pip3 install pylibiio')
                         run_i('mkdir testxml')
                         board = board.replaceAll('-', '_') 
-                        ignore_all_filtered = " ; ret=$?; [ $ret = 5 ] && exit 0 || exit $ret"
+                        def ignore_all_filtered = " ; ret=\$?; [ \$ret = 5 ] && exit 0 || exit \$ret"
                         run_i("python3 -m pytest --junitxml=testxml/" + board + "_reports.xml -v -k 'not stress' -s --uri='ip:"+ip+"' -m " + board + ignore_all_filtered)
             }
                 }
