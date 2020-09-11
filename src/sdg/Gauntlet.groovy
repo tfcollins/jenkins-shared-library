@@ -197,6 +197,7 @@ private def run_agents() {
                 println("Stage called for board: "+board)
                 stages[k].call(board)
             }
+            cleanWs();
         }
     }
 
