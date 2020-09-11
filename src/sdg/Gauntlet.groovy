@@ -90,10 +90,10 @@ def stage_library(String stage_name) {
                     println("Board name passed: "+board)
                     //def board = nebula('update-config board-config board-name')
                     if (board=="pluto")
-                        nebula('dl.bootfiles --design-name=' + board + ' --branch=' + gauntEnv.firmwareVersion)
+                        nebula('dl.bootfiles --board-name=' + board + ' --branch=' + gauntEnv.firmwareVersion)
                     else
-                        nebula('dl.bootfiles --design-name=' + board + ' --source-root=' + gauntEnv.nebula_local_fs_source_root)
-                    nebula('manager.update-boot-files --design-name=' + board + ' --folder=outs', full=false, show_log=true)
+                        nebula('dl.bootfiles --board-name=' + board + ' --source-root=' + gauntEnv.nebula_local_fs_source_root)
+                    nebula('manager.update-boot-files --board-name=' + board + ' --folder=outs', full=false, show_log=true)
                     if (board=="pluto")
                         nebula('uart.set-local-nic-ip-from-usbdev')
                 }
@@ -109,20 +109,18 @@ def stage_library(String stage_name) {
             break
     case 'LinuxTests':
             println('Added Stage LinuxTests')
-            cls = {
+            cls = { String board ->
                 try {
                     stage('Linux Tests') {
                         run_i('pip3 install pylibiio')
                         //def ip = nebula('uart.get-ip')
-                        def ip = nebula('update-config network-config dutip')
-                        def board = nebula('update-config board-config board-name')
+                        def ip = nebula('update-config network-config dutip --board-name='+board)
                         nebula("net.check-dmesg --ip='"+ip+"'")
-                        nebula('driver.check-iio-devices --uri="ip:'+ip+'"')
+                        nebula('driver.check-iio-devices --uri="ip:'+ip+'" --board-name='+board)
                     }
                 }
         finally {
                     // Rename logs
-                    def board = nebula('update-config board-config board-name')
                     run_i("mv dmesg.log dmesg_" + board + ".log")
                     run_i("mv dmesg_err.log dmesg_" + board + "_err.log")
                     run_i("mv dmesg_warn.log dmesg_" + board + "_warn.log")
@@ -131,13 +129,12 @@ def stage_library(String stage_name) {
       };
             break
     case 'PyADITests':
-            cls = {
+            cls = { String board ->
                 try
                 {
                 stage('Run Python Tests') {
                     //def ip = nebula('uart.get-ip')
-                    def ip = nebula('update-config network-config dutip')
-                    def board = nebula('update-config board-config board-name')
+                    def ip = nebula('update-config network-config dutip --board-name='+board)
                     println('IP: ' + ip)
                     sh 'git clone -b "' + gauntEnv.pyadiBranch + '" https://github.com/analogdevicesinc/pyadi-iio.git'
                     dir('pyadi-iio')
