@@ -220,6 +220,7 @@ private def run_agents() {
             docker.image(docker_image_name).inside(docker_args) {
                 stage('Setup Docker') {
                     sh 'cp /default/nebula /etc/default/nebula'
+                    setupAgent(['libiio','nebula']);
                 }
                 for (k = 0; k < num_stages; k++) {
                     println("Stage called for board: "+board)
