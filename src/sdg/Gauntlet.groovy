@@ -28,6 +28,9 @@ def construct(List dependencies, hdlBranch, linuxBranch, firmwareVersion, bootfi
             agents: [],
             boards: [],
             required_hardware: [],
+            use_docker: false,
+            docker_image: 'tfcollins/hdl-ci:latest',
+            docker_args: ['MATLAB','Vivado'],
             setup_called: false,
             nebula_debug: false,
             nebula_local_fs_source_root: '/var/lib/tftpboot',
@@ -192,13 +195,37 @@ private def run_agents() {
     // Start stages for each node with a board
     def jobs = [:]
     def num_boards = gauntEnv.boards.size()
+    def docker_image = gauntEnv.docker_image
+    def docker_args = getDockerConfig(gauntEnv.docker_args)
+    docker_args.add("-v /etc/default:/default:ro")
+    docker_args.add("-v /dev:/dev")
+    if (docker_args instanceof List) {
+        docker_args = docker_args.join(' ')
+    }
 
-    def oneNode = { agent, num_stages, stages, board  ->
+    
+    def oneNode = { agent, num_stages, stages, board, docker_image  ->
         def k
         node(agent) {
             for (k = 0; k < num_stages; k++) {
                 println("Stage called for board: "+board)
                 stages[k].call(board)
+            }
+            cleanWs();
+        }
+    }
+    
+    def oneNodeDocker = { agent, num_stages, stages, board  ->
+        def k
+        node(agent) {
+            docker.image(docker_image).inside(docker_args) {
+                stage('Setup Docker') {
+                    sh 'cp /default/nebula /etc/default/nebula'
+                }
+                for (k = 0; k < num_stages; k++) {
+                    println("Stage called for board: "+board)
+                    stages[k].call(board)
+                }
             }
             cleanWs();
         }
@@ -222,8 +249,10 @@ jobs[agent+"-"+board] = {
   }
 }
 */
-
-        jobs[agent + '-' + board] = { oneNode(agent, num_stages, stages, board) };
+        if (gauntEnv.enable_docker)
+            jobs[agent + '-' + board] = { oneNodeDocker(agent, num_stages, stages, board, docker_image) };
+        else
+            jobs[agent + '-' + board] = { oneNode(agent, num_stages, stages, board) };
     }
 
     stage('Update and Test') {
@@ -266,6 +295,13 @@ def set_pyadi_branch(pyadi_branch) {
     gauntEnv.pyadiBranch = pyadi_branch
 }
 
+/**
+ * Enable use of docker at agent during jobs phases.
+ * @param enable_docker boolean True will enable use of docker
+ */
+def set_enable_docker(enable_docker) {
+    gauntEnv.enable_docker = enable_docker
+}
 
 private def check_required_hardware() {
     def s = gauntEnv.required_hardware.size()
