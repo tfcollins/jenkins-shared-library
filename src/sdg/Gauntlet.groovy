@@ -221,6 +221,8 @@ private def run_agents() {
                 stage('Setup Docker') {
                     sh 'cp /default/nebula /etc/default/nebula'
                     setupAgent(['libiio','nebula']);
+                    // Above cleans up so we need to move to a valid folder
+                    sh 'cd /tmp'
                 }
                 for (k = 0; k < num_stages; k++) {
                     println("Stage called for board: "+board)
