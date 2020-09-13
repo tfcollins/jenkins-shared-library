@@ -220,7 +220,7 @@ private def run_agents() {
             docker.image(docker_image_name).inside(docker_args) {
                 stage('Setup Docker') {
                     sh 'cp /default/nebula /etc/default/nebula'
-                    setupAgent(['libiio','nebula']);
+                    setupAgent(['libiio','nebula'], true);
                     // Above cleans up so we need to move to a valid folder
                     sh 'cd /tmp'
                 }
@@ -492,7 +492,7 @@ private def install_libiio() {
     }
 }
 
-private def setupAgent(deps) {
+private def setupAgent(deps, skip_cleanup = false) {
     try {
         def i;
         for (i = 0; i < deps.size; i++) {
@@ -506,7 +506,8 @@ private def setupAgent(deps) {
         }
     }
     finally {
-        cleanWs()
+        if (!skip_cleanup)
+            cleanWs()
     }
 }
 
