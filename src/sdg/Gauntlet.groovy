@@ -28,7 +28,7 @@ def construct(List dependencies, hdlBranch, linuxBranch, firmwareVersion, bootfi
             agents: [],
             boards: [],
             required_hardware: [],
-            use_docker: false,
+            enable_docker: false,
             docker_image: 'tfcollins/hdl-ci:latest',
             docker_args: ['MATLAB','Vivado'],
             setup_called: false,
