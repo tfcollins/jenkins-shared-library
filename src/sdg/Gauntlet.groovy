@@ -195,7 +195,6 @@ private def run_agents() {
     // Start stages for each node with a board
     def jobs = [:]
     def num_boards = gauntEnv.boards.size()
-    def docker_image = gauntEnv.docker_image
     def docker_args = getDockerConfig(gauntEnv.docker_args)
     docker_args.add("-v /etc/default:/default:ro")
     docker_args.add("-v /dev:/dev")
@@ -204,7 +203,7 @@ private def run_agents() {
     }
 
     
-    def oneNode = { agent, num_stages, stages, board, docker_image  ->
+    def oneNode = { agent, num_stages, stages, board  ->
         def k
         node(agent) {
             for (k = 0; k < num_stages; k++) {
@@ -215,10 +214,10 @@ private def run_agents() {
         }
     }
     
-    def oneNodeDocker = { agent, num_stages, stages, board  ->
+    def oneNodeDocker = { agent, num_stages, stages, board, docker_image_name  ->
         def k
         node(agent) {
-            docker.image(docker_image).inside(docker_args) {
+            docker.image(docker_image_name).inside(docker_args) {
                 stage('Setup Docker') {
                     sh 'cp /default/nebula /etc/default/nebula'
                 }
@@ -235,6 +234,7 @@ private def run_agents() {
         def agent = gauntEnv.agents[i]
         def board = gauntEnv.boards[i]
         def stages = gauntEnv.stages
+        def docker_image = gauntEnv.docker_image
         def num_stages = stages.size()
         
         println('Agent: ' + agent + ' Board: ' + board)
