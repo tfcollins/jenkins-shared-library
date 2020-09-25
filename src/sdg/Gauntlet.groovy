@@ -89,6 +89,7 @@ def stage_library(String stage_name) {
     case 'UpdateBOOTFiles':
             println('Added Stage UpdateBOOTFiles')
             cls = { String board ->
+                try {
                 stage('Update BOOT Files') {
                     println("Board name passed: "+board)
                     if (board=="pluto")
@@ -98,6 +99,10 @@ def stage_library(String stage_name) {
                     nebula('manager.update-boot-files --board-name=' + board + ' --folder=outs', full=false, show_log=true)
                     if (board=="pluto")
                         nebula('uart.set-local-nic-ip-from-usbdev')
+                }}
+                catch(Exception ex) {
+                    cleanWs();
+                    throw new ex;
                 }
       };
             break
