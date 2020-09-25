@@ -102,7 +102,7 @@ def stage_library(String stage_name) {
                 }}
                 catch(Exception ex) {
                     cleanWs();
-                    throw new ex;
+                    throw new Exception('Update boot files failed');
                 }
       };
             break
