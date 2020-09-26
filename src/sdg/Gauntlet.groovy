@@ -303,6 +303,14 @@ def set_pyadi_branch(pyadi_branch) {
 }
 
 /**
+ * Set docker args passed to docker container at runtime.
+ * @param docker_args List of strings of args
+ */
+def set_docker_args(docker_args) {
+    gauntEnv.docker_args = docker_args
+}
+
+/**
  * Enable use of docker at agent during jobs phases.
  * @param enable_docker boolean True will enable use of docker
  */
