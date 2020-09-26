@@ -222,6 +222,7 @@ private def run_agents() {
         def k
         node(agent) {
             docker.image(docker_image_name).inside(docker_args) {
+                try {
                 stage('Setup Docker') {
                     sh 'cp /default/nebula /etc/default/nebula'
                     setupAgent(['libiio','nebula'], true);
@@ -232,8 +233,11 @@ private def run_agents() {
                     println("Stage called for board: "+board)
                     stages[k].call(board)
                 }
+                }
+                finally {
+                    cleanWs();
+                }
             }
-            cleanWs();
         }
     }
 
