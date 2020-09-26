@@ -18,7 +18,7 @@ def call(java.util.ArrayList listOfResources, UseNFS=false) {
                 args.add('-v "/mlhsp":"/mlhsp":ro')
         }
         }
-        if (listOfResources[i].equalsIgnoreCase( 'Vivado' )) {
+        else if (listOfResources[i].equalsIgnoreCase( 'Vivado' )) {
             echo '----Adding Vivado Resources----'
             if (UseNFS) {
                 args.add('-v "/nfs/apps/Xilinx":"/opt/Xilinx":ro')
@@ -32,6 +32,9 @@ def call(java.util.ArrayList listOfResources, UseNFS=false) {
             // Zombie processed get created without this argument
             // https://stackoverflow.com/questions/55733058/vivado-synthesis-hangs-in-docker-container-spawned-by-jenkins
             args.add('--init')
+        }
+        else {
+            args.add(listOfResources[i])
         }
         // Add correct MAC to licenses work in Docker
         withCredentials([string(credentialsId: 'MAC_ADDR', variable: 'MAC_ADDR')]) {
