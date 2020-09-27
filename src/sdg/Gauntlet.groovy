@@ -221,6 +221,7 @@ private def run_agents() {
     def oneNodeDocker = { agent, num_stages, stages, board, docker_image_name  ->
         def k
         node(agent) {
+            try {
             docker.image(docker_image_name).inside(docker_args) {
                 try {
                 stage('Setup Docker') {
@@ -237,7 +238,11 @@ private def run_agents() {
                 finally {
                     cleanWs();
                 }
-            }
+            }}
+            finally {
+            stage('Cleanup Docker') {
+                sh 'docker ps -q -f status=exited | xargs --no-run-if-empty docker rm'
+            }}
         }
     }
 
