@@ -236,7 +236,7 @@ private def run_agents() {
                         }
                     }
                     finally {
-                        println("Cleaning up after board stages
+                        println("Cleaning up after board stages");
                         cleanWs();
                     }
                 }
