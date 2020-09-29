@@ -226,6 +226,7 @@ private def run_agents() {
                     try {
                         stage('Setup Docker') {
                             sh 'cp /default/nebula /etc/default/nebula'
+                            sh 'cp /default/pyadi_test.yaml /etc/default/pyadi_test.yaml || true'
                             setupAgent(['libiio','nebula'], true);
                             // Above cleans up so we need to move to a valid folder
                             sh 'cd /tmp'
