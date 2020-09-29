@@ -222,6 +222,7 @@ private def run_agents() {
         def k
         node(agent) {
             try {
+                cleanWs();
                 docker.image(docker_image_name).inside(docker_args) {
                     stage('Setup Docker') {
                         sh 'cp /default/nebula /etc/default/nebula'
@@ -237,7 +238,7 @@ private def run_agents() {
                     }
                     finally {
                         println("Cleaning up after board stages");
-                        cleanWs();
+                        //cleanWs();
                     }
                 }
             }
