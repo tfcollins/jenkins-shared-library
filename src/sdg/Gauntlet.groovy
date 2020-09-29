@@ -236,6 +236,7 @@ private def run_agents() {
                 }
                 }
                 finally {
+                    println("Cleaning up after stages");
                     cleanWs();
                 }
             }}
