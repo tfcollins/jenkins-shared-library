@@ -222,8 +222,8 @@ private def run_agents() {
         def k
         node(agent) {
             try {
-                cleanWs();
                 docker.image(docker_image_name).inside(docker_args) {
+                    cleanWs();
                     stage('Setup Docker') {
                         sh 'cp /default/nebula /etc/default/nebula'
                         setupAgent(['libiio','nebula'], true);
