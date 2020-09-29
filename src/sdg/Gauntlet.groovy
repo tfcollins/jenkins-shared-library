@@ -223,14 +223,13 @@ private def run_agents() {
         node(agent) {
             try {
                 docker.image(docker_image_name).inside(docker_args) {
-                    cleanWs();
-                    stage('Setup Docker') {
-                        sh 'cp /default/nebula /etc/default/nebula'
-                        setupAgent(['libiio','nebula'], true);
-                        // Above cleans up so we need to move to a valid folder
-                        sh 'cd /tmp'
-                    }
                     try {
+                        stage('Setup Docker') {
+                            sh 'cp /default/nebula /etc/default/nebula'
+                            setupAgent(['libiio','nebula'], true);
+                            // Above cleans up so we need to move to a valid folder
+                            sh 'cd /tmp'
+                        }
                         for (k = 0; k < num_stages; k++) {
                             println("Stage called for board: "+board)
                             stages[k].call(board)
@@ -238,14 +237,12 @@ private def run_agents() {
                     }
                     finally {
                         println("Cleaning up after board stages");
-                        //cleanWs();
+                        cleanWs();
                     }
                 }
             }
             finally {
-                stage('Cleanup Docker') {
-                    sh 'docker ps -q -f status=exited | xargs --no-run-if-empty docker rm'
-                }
+                sh 'docker ps -q -f status=exited | xargs --no-run-if-empty docker rm'
             }
         }
     }
