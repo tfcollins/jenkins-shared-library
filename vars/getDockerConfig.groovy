@@ -17,6 +17,10 @@ def call(java.util.ArrayList listOfResources, UseNFS=false) {
                 args.add('-v "/root/.matlab":"/root/.matlabro":ro')
                 args.add('-v "/mlhsp":"/mlhsp":ro')
         }
+        // Add correct MAC to licenses work in Docker
+        withCredentials([string(credentialsId: 'MAC_ADDR', variable: 'MAC_ADDR')]) {
+            args.add('--mac-address ' + MAC_ADDR)
+        }
         }
         else if (listOfResources[i].equalsIgnoreCase( 'Vivado' )) {
             echo '----Adding Vivado Resources----'
@@ -35,10 +39,6 @@ def call(java.util.ArrayList listOfResources, UseNFS=false) {
         }
         else {
             args.add(listOfResources[i])
-        }
-        // Add correct MAC to licenses work in Docker
-        withCredentials([string(credentialsId: 'MAC_ADDR', variable: 'MAC_ADDR')]) {
-            args.add('--mac-address ' + MAC_ADDR)
         }
     }
 
