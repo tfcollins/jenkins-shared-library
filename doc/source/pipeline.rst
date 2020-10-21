@@ -25,14 +25,17 @@ Example Jenkinsfile
         def dependencies = ["nebula","libiio","libiio-py"]
         // Define target HDL release or branch whos related files will be collected from
         // the build server
-        def hdlBranch = "hdl_2019_r1"
+        def hdlCommit = "hdl_2019_r1" // Can be commit hash, latest, or release branch name
         // Define target Linux release or branch whos related files will be collected from
         // the build server
-        def linuxBranch = "2019_R1"
+        def linuxCommit = "2019_R1" // Can be commit hash, latest, or release branch name
+        // Define firmware version to download for appropriate devices (M2K or Pluto)
+        // If M2K or Pluto are not undertest this does nothing
+        def firmwareVersion = "v0.32" // Must be in reference to a github release of form vX.XX
         // Set the source of the bootfiles to be used. This is where bootfiles will be
         // downloaded from and deploy to eat board
-        def bootfile_source = 'artifactory' // options: sftp, artifactory, http, local
-        def harness = getGauntlet(dependencies, hdlBranch, linuxBranch, bootfile_source)
+        def bootfileSource = 'http' // options: sftp, artifactory, http, local
+        def harness = getGauntlet(dependencies, hdlCommit, linuxCommit, firmwareVersion, bootfileSource)
 
         // Set required board (Fail otherwise)
         // If not set all available hardware is used
