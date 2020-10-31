@@ -19,7 +19,7 @@ jobs:
       - cd ..
       - cp -r doc/build/html/* all_doc/
       - mkdir all_doc/api
-      - groovydoc -d all_doc/api -private -nomainforscripts -sourcepath src:vars $(find src/ vars/ -name \*.groovy -printf '%P\n')
+      - groovydoc -sourcepath src:vars -d all_doc/api 'sdg' '*.groovy'
     deploy:
       - provider: pages
         verbose: true
