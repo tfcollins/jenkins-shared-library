@@ -160,7 +160,7 @@
   <div class="section" id="gauntlet-hardware-pipeline">
 <h1>Gauntlet Hardware Pipeline<a class="headerlink" href="#gauntlet-hardware-pipeline" title="Permalink to this headline">¶</a></h1>
 <p>The main purpose of this shared library is to provide a standardize pipeline for software project that want to run code against hardware targets. The figure below shows an example pipeline that is generated using the Jenkinsfile below it.</p>
-digraph {
+<div class="graphviz"><img src="_images/graphviz-33f0b4ca3c03e7250355e2007415cfe3189a3de8.png" alt="digraph {
 
 
     rankdir=LR;
@@ -214,7 +214,7 @@ digraph {
     &quot;Collect Logs\n(pi4b-cluj-zc706-daq2)&quot; -&gt; &quot;Process\nLogs\n(master)&quot;
     &quot;Collect Logs\n(pi4c-cluj-pluto)&quot; -&gt; &quot;Process\nLogs\n(master)&quot;
 
-}
+}" class="graphviz" /></div>
 <p>These pipelines have 3 main phases. Starting from the left side of the pipeline, phase 1 is the first two horizontal stages. In the first stage each agent is queried to determined available hardware. Then in the second stage, this information is return to the master node and the necessary downstream stages are determined. This will occur in all pipeline configuration using the <strong>Gaunlet</strong> class. The generated downstream stages will be based on how the <strong>harness</strong> object is configured. In the Jenkinsfile below, four stages are added from the <a class="reference internal" href="stages.html#library-label"><span class="std std-ref">Pipeline Stage Library</span></a>. These stages are run in the order in which they are added. Each of these stages will be run for each target board configuration. By default all available hardware is used in this phase. If a single board or hardware setup is desired, the <em>set_required_hardware</em> method should be used.</p>
 <p>The final phase is for post processing, here logs and artifacts are gathered for collection. These will typically be saved to artifactory of to a logging server for analysis.</p>
 <p>The available flags are documented for reference in the Jenkinsfile below. See the generated groovydoc for explicit syntax and all available methods.</p>
