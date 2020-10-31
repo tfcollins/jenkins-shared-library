@@ -4,7 +4,7 @@ python:
 - '3.7'
 install:
 - sudo apt-get -qq update
-- sudo apt-get install -y groovy
+- sudo apt-get install -y groovy graphviz
 - sudo apt-get install -y python3-pip python3-setuptools
 - travis_retry pip install -r requirements_doc.txt
 
