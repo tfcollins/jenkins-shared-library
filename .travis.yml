@@ -13,13 +13,11 @@ jobs:
   - stage: Doc
     python: 3.7
     script:
-      - mkdir all_doc
       - export PYTHONPATH=$PYTHONPATH:'/usr/lib/python3.7/site-packages'
       - cd doc && make html
       - cd ..
-      - cp -r doc/build/html/* all_doc/
-      - mkdir all_doc/api
-      - groovydoc -sourcepath src:vars -d all_doc/api 'sdg' '*.groovy'
+      - mkdir doc/build/html/api
+      - groovydoc -sourcepath src:vars -d doc/build/html/api/ 'sdg' '*.groovy'
     deploy:
       - provider: pages
         verbose: true
@@ -28,7 +26,7 @@ jobs:
         on:
           branch: master
         github_token: $GITHUB_TOKEN
-        local_dir: all_doc
+        local_dir: doc/build/html
         committer_from_gh: true
       - provider: pages
         verbose: true
