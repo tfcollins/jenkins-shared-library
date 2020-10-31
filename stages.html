@@ -1,0 +1,258 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Pipeline Stage Library &mdash; SDG Jenkins Shared Libary v0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Artifact Management" href="artifacts.html" />
+    <link rel="prev" title="Gauntlet Hardware Pipeline" href="pipeline.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> SDG Jenkins Shared Libary
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="pipeline.html">Gauntlet Hardware Pipeline</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Pipeline Stage Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="artifacts.html">Artifact Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nebula.html">Nebula</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SDG Jenkins Shared Libary</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Pipeline Stage Library</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/stages.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="pipeline-stage-library">
+<span id="library-label"></span><h1>Pipeline Stage Library<a class="headerlink" href="#pipeline-stage-library" title="Permalink to this headline">¶</a></h1>
+<p>The common pipeline stages are:</p>
+<p>Update board boot files: <code class="docutils literal notranslate"><span class="pre">UpdateBOOTFiles</span></code></p>
+<div class="highlight-groovy notranslate"><div class="highlight"><pre><span></span><span class="n">stage</span><span class="o">(</span><span class="s2">&quot;Update BOOT Files&quot;</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">board</span> <span class="o">=</span> <span class="n">nebula</span><span class="o">(</span><span class="s2">&quot;update-config board-config board-name&quot;</span><span class="o">)</span>
+  <span class="n">nebula</span><span class="o">(</span><span class="s2">&quot;dl.bootfiles --design-name=&quot;</span><span class="o">+</span><span class="n">board</span><span class="o">)</span>
+  <span class="n">nebula</span><span class="o">(</span><span class="s2">&quot;manager.update-boot-files --folder=outs&quot;</span><span class="o">)</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>Collect XML test logs: <code class="docutils literal notranslate"><span class="pre">CollectLogs</span></code></p>
+<div class="highlight-groovy notranslate"><div class="highlight"><pre><span></span><span class="n">stage</span><span class="o">(</span><span class="s2">&quot;Collect Logs&quot;</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">echo</span> <span class="s2">&quot;Collect Logs&quot;</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>Basic Linux testing: <code class="docutils literal notranslate"><span class="pre">LinuxTests</span></code></p>
+<div class="highlight-groovy notranslate"><div class="highlight"><pre><span></span><span class="n">stage</span><span class="o">(</span><span class="s2">&quot;Linux Tests&quot;</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">ip</span> <span class="o">=</span> <span class="n">nebula</span><span class="o">(</span><span class="s2">&quot;uart.get-ip&quot;</span><span class="o">)</span>
+  <span class="n">nebula</span><span class="o">(</span><span class="s2">&quot;net.check-dmesg --ip=&#39;&quot;</span><span class="o">+</span><span class="n">ip</span><span class="o">+</span><span class="s2">&quot;&#39;&quot;</span><span class="o">)</span>
+  <span class="n">nebula</span><span class="o">(</span><span class="s1">&#39;driver.check-iio-devices --uri=&quot;ip:&#39;</span><span class="o">+</span><span class="n">ip</span><span class="o">+</span><span class="s1">&#39;&quot;&#39;</span><span class="o">)</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>Device specific pyadi-iio based testing: <code class="docutils literal notranslate"><span class="pre">PyADITests</span></code></p>
+<div class="highlight-groovy notranslate"><div class="highlight"><pre><span></span><span class="n">stage</span><span class="o">(</span><span class="s1">&#39;Run Python Tests&#39;</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">ip</span> <span class="o">=</span> <span class="n">nebula</span><span class="o">(</span><span class="s2">&quot;uart.get-ip&quot;</span><span class="o">)</span>
+  <span class="n">board</span> <span class="o">=</span> <span class="n">nebula</span><span class="o">(</span><span class="s2">&quot;update-config board-config board-name&quot;</span><span class="o">)</span>
+  <span class="n">println</span><span class="o">(</span><span class="s2">&quot;IP: &quot;</span><span class="o">+</span><span class="n">ip</span><span class="o">)</span>
+  <span class="n">sh</span> <span class="s2">&quot;git clone https://github.com/analogdevicesinc/pyadi-iio.git&quot;</span>
+  <span class="n">dir</span><span class="o">(</span><span class="s2">&quot;pyadi-iio&quot;</span><span class="o">)</span>
+  <span class="o">{</span>
+      <span class="n">run_i</span><span class="o">(</span><span class="s2">&quot;pip3 install -r requirements.txt&quot;</span><span class="o">)</span>
+      <span class="n">run_i</span><span class="o">(</span><span class="s2">&quot;pip3 install -r requirements_dev.txt&quot;</span><span class="o">)</span>
+      <span class="n">run_i</span><span class="o">(</span><span class="s2">&quot;pip3 install pylibiio&quot;</span><span class="o">)</span>
+      <span class="n">run_i</span><span class="o">(</span><span class="s2">&quot;mkdir testxml&quot;</span><span class="o">)</span>
+      <span class="n">run_i</span><span class="o">(</span><span class="s2">&quot;python3 -m pytest --junitxml=testxml/reports.xml -v -k &#39;not stress&#39; -s --uri=&#39;ip:&quot;</span><span class="o">+</span><span class="n">ip</span><span class="o">+</span><span class="s2">&quot;&#39; -m &quot;</span><span class="o">+</span><span class="n">board</span><span class="o">.</span><span class="na">replaceAll</span><span class="o">(</span><span class="s2">&quot;-&quot;</span><span class="o">,</span><span class="s2">&quot;_&quot;</span><span class="o">))</span>
+      <span class="n">junit</span> <span class="nl">testResults:</span> <span class="s1">&#39;test/*.xml&#39;</span><span class="o">,</span> <span class="nl">allowEmptyResults:</span> <span class="kc">true</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="artifacts.html" class="btn btn-neutral float-right" title="Artifact Management" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="pipeline.html" class="btn btn-neutral float-left" title="Gauntlet Hardware Pipeline" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Travis F. Collins &lt;travis.collins@analog.com&gt;
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

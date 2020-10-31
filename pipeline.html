@@ -1,0 +1,324 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Gauntlet Hardware Pipeline &mdash; SDG Jenkins Shared Libary v0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Pipeline Stage Library" href="stages.html" />
+    <link rel="prev" title="SDG Jenkins Shared Libary’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> SDG Jenkins Shared Libary
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Gauntlet Hardware Pipeline</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#example-jenkinsfile">Example Jenkinsfile</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="stages.html">Pipeline Stage Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="artifacts.html">Artifact Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nebula.html">Nebula</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SDG Jenkins Shared Libary</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Gauntlet Hardware Pipeline</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/pipeline.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="gauntlet-hardware-pipeline">
+<h1>Gauntlet Hardware Pipeline<a class="headerlink" href="#gauntlet-hardware-pipeline" title="Permalink to this headline">¶</a></h1>
+<p>The main purpose of this shared library is to provide a standardize pipeline for software project that want to run code against hardware targets. The figure below shows an example pipeline that is generated using the Jenkinsfile below it.</p>
+digraph {
+
+
+    rankdir=LR;
+    //size=&quot;30,30&quot;;
+    ratio = fill;
+
+    &quot;START\n(master)&quot;
+    &quot;Query Node\n(pi4a-cluj)&quot; [peripheries=3]
+    &quot;Query Node\n(pi4b-cluj)&quot; [peripheries=3]
+    &quot;Query Node\n(pi4c-cluj)&quot; [peripheries=3]
+    &quot;Check Board\nConfigurations\n(master)&quot;
+    &quot;Update Boot\n(pi4a-cluj-zed-fmcomms2)&quot;
+    &quot;Update Boot\n(pi4b-cluj-zc706-daq2)&quot;
+    &quot;Update Boot\n(pi4c-cluj-pluto)&quot;
+    &quot;Collect Logs\n(pi4a-cluj-zed-fmcomms2)&quot;
+    &quot;Collect Logs\n(pi4b-cluj-zc706-daq2)&quot;
+    &quot;Collect Logs\n(pi4c-cluj-pluto)&quot;
+    &quot;Run Linux Checks\n(pi4a-cluj-zed-fmcomms2)&quot;
+    &quot;Run Linux Checks\n(pi4b-cluj-zc706-daq2)&quot;
+    &quot;Run Linux Checks\n(pi4c-cluj-pluto)&quot;
+    &quot;Run Python Tests\n(pi4a-cluj-zed-fmcomms2)&quot;
+    &quot;Run Python Tests\n(pi4b-cluj-zc706-daq2)&quot;
+    &quot;Run Python Tests\n(pi4c-cluj-pluto)&quot;
+    &quot;Process\nLogs\n(master)&quot;
+
+    &quot;START\n(master)&quot; -&gt; &quot;Query Node\n(pi4a-cluj)&quot;
+    &quot;START\n(master)&quot; -&gt; &quot;Query Node\n(pi4b-cluj)&quot;
+    &quot;START\n(master)&quot; -&gt; &quot;Query Node\n(pi4c-cluj)&quot;
+
+    &quot;Query Node\n(pi4a-cluj)&quot; -&gt; &quot;Check Board\nConfigurations\n(master)&quot;
+    &quot;Query Node\n(pi4b-cluj)&quot; -&gt; &quot;Check Board\nConfigurations\n(master)&quot;
+    &quot;Query Node\n(pi4c-cluj)&quot; -&gt; &quot;Check Board\nConfigurations\n(master)&quot;
+
+    &quot;Check Board\nConfigurations\n(master)&quot; -&gt; &quot;Update Boot\n(pi4a-cluj-zed-fmcomms2)&quot;
+    &quot;Check Board\nConfigurations\n(master)&quot; -&gt; &quot;Update Boot\n(pi4b-cluj-zc706-daq2)&quot;
+    &quot;Check Board\nConfigurations\n(master)&quot; -&gt; &quot;Update Boot\n(pi4c-cluj-pluto)&quot;
+
+    &quot;Update Boot\n(pi4a-cluj-zed-fmcomms2)&quot; -&gt; &quot;Run Linux Checks\n(pi4a-cluj-zed-fmcomms2)&quot;
+    &quot;Update Boot\n(pi4b-cluj-zc706-daq2)&quot; -&gt; &quot;Run Linux Checks\n(pi4b-cluj-zc706-daq2)&quot;
+    &quot;Update Boot\n(pi4c-cluj-pluto)&quot; -&gt; &quot;Run Linux Checks\n(pi4c-cluj-pluto)&quot;
+
+    &quot;Run Linux Checks\n(pi4a-cluj-zed-fmcomms2)&quot; -&gt; &quot;Run Python Tests\n(pi4a-cluj-zed-fmcomms2)&quot;
+    &quot;Run Linux Checks\n(pi4b-cluj-zc706-daq2)&quot; -&gt; &quot;Run Python Tests\n(pi4b-cluj-zc706-daq2)&quot;
+    &quot;Run Linux Checks\n(pi4c-cluj-pluto)&quot; -&gt; &quot;Run Python Tests\n(pi4c-cluj-pluto)&quot;
+
+    &quot;Run Python Tests\n(pi4a-cluj-zed-fmcomms2)&quot; -&gt; &quot;Collect Logs\n(pi4a-cluj-zed-fmcomms2)&quot;
+    &quot;Run Python Tests\n(pi4b-cluj-zc706-daq2)&quot; -&gt; &quot;Collect Logs\n(pi4b-cluj-zc706-daq2)&quot;
+    &quot;Run Python Tests\n(pi4c-cluj-pluto)&quot; -&gt; &quot;Collect Logs\n(pi4c-cluj-pluto)&quot;
+
+    &quot;Collect Logs\n(pi4a-cluj-zed-fmcomms2)&quot; -&gt; &quot;Process\nLogs\n(master)&quot;
+    &quot;Collect Logs\n(pi4b-cluj-zc706-daq2)&quot; -&gt; &quot;Process\nLogs\n(master)&quot;
+    &quot;Collect Logs\n(pi4c-cluj-pluto)&quot; -&gt; &quot;Process\nLogs\n(master)&quot;
+
+}
+<p>These pipelines have 3 main phases. Starting from the left side of the pipeline, phase 1 is the first two horizontal stages. In the first stage each agent is queried to determined available hardware. Then in the second stage, this information is return to the master node and the necessary downstream stages are determined. This will occur in all pipeline configuration using the <strong>Gaunlet</strong> class. The generated downstream stages will be based on how the <strong>harness</strong> object is configured. In the Jenkinsfile below, four stages are added from the <a class="reference internal" href="stages.html#library-label"><span class="std std-ref">Pipeline Stage Library</span></a>. These stages are run in the order in which they are added. Each of these stages will be run for each target board configuration. By default all available hardware is used in this phase. If a single board or hardware setup is desired, the <em>set_required_hardware</em> method should be used.</p>
+<p>The final phase is for post processing, here logs and artifacts are gathered for collection. These will typically be saved to artifactory of to a logging server for analysis.</p>
+<p>The available flags are documented for reference in the Jenkinsfile below. See the generated groovydoc for explicit syntax and all available methods.</p>
+<div class="section" id="example-jenkinsfile">
+<h2>Example Jenkinsfile<a class="headerlink" href="#example-jenkinsfile" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-groovy notranslate"><div class="highlight"><pre><span></span><span class="c1">// Pipeline</span>
+
+<span class="nd">@Library</span><span class="o">(</span><span class="s1">&#39;tfc-lib&#39;</span><span class="o">)</span> <span class="n">_</span> <span class="c1">// Not necessary when we turn on global libraries :)</span>
+
+<span class="c1">// Define dependencies required on all agents</span>
+<span class="kt">def</span> <span class="n">dependencies</span> <span class="o">=</span> <span class="o">[</span><span class="s2">&quot;nebula&quot;</span><span class="o">,</span><span class="s2">&quot;libiio&quot;</span><span class="o">,</span><span class="s2">&quot;libiio-py&quot;</span><span class="o">]</span>
+<span class="c1">// Define target HDL release or branch whos related files will be collected from</span>
+<span class="c1">// the build server</span>
+<span class="kt">def</span> <span class="n">hdlBranch</span> <span class="o">=</span> <span class="s2">&quot;hdl_2019_r1&quot;</span>
+<span class="c1">// Define target Linux release or branch whos related files will be collected from</span>
+<span class="c1">// the build server</span>
+<span class="kt">def</span> <span class="n">linuxBranch</span> <span class="o">=</span> <span class="s2">&quot;2019_R1&quot;</span>
+<span class="c1">// Set the source of the bootfiles to be used. This is where bootfiles will be</span>
+<span class="c1">// downloaded from and deploy to eat board</span>
+<span class="kt">def</span> <span class="n">bootfile_source</span> <span class="o">=</span> <span class="s1">&#39;artifactory&#39;</span> <span class="c1">// options: sftp, artifactory, http, local</span>
+<span class="kt">def</span> <span class="n">harness</span> <span class="o">=</span> <span class="n">getGauntlet</span><span class="o">(</span><span class="n">dependencies</span><span class="o">,</span> <span class="n">hdlBranch</span><span class="o">,</span> <span class="n">linuxBranch</span><span class="o">,</span> <span class="n">bootfile_source</span><span class="o">)</span>
+
+<span class="c1">// Set required board (Fail otherwise)</span>
+<span class="c1">// If not set all available hardware is used</span>
+<span class="c1">// harness.set_required_hardware([&quot;zynq-adrv9361-z7035-fmc&quot;])</span>
+
+<span class="c1">// Set stages (stages are run sequentially on agents)</span>
+<span class="n">harness</span><span class="o">.</span><span class="na">add_stage</span><span class="o">(</span><span class="n">harness</span><span class="o">.</span><span class="na">stage_library</span><span class="o">(</span><span class="s2">&quot;UpdateBOOTFiles&quot;</span><span class="o">))</span>
+<span class="n">harness</span><span class="o">.</span><span class="na">add_stage</span><span class="o">(</span><span class="n">harness</span><span class="o">.</span><span class="na">stage_library</span><span class="o">(</span><span class="s2">&quot;LinuxTests&quot;</span><span class="o">))</span>
+<span class="n">harness</span><span class="o">.</span><span class="na">add_stage</span><span class="o">(</span><span class="n">harness</span><span class="o">.</span><span class="na">stage_library</span><span class="o">(</span><span class="s2">&quot;PyADITests&quot;</span><span class="o">))</span>
+<span class="n">harness</span><span class="o">.</span><span class="na">add_stage</span><span class="o">(</span><span class="n">harness</span><span class="o">.</span><span class="na">stage_library</span><span class="o">(</span><span class="s2">&quot;CollectLogs&quot;</span><span class="o">))</span>
+<span class="c1">//Above is equivalent to harness.set_default_stages()</span>
+
+
+<span class="c1">// Custom test stage</span>
+<span class="kt">def</span> <span class="n">mytest</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="n">stage</span><span class="o">(</span><span class="s2">&quot;Example Stage&quot;</span><span class="o">)</span> <span class="o">{</span>
+         <span class="n">sh</span> <span class="s1">&#39;echo &quot;Run my custom closure&quot;&#39;</span>
+         <span class="n">sh</span> <span class="s1">&#39;echo &quot;pew pew&quot;&#39;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+<span class="c1">//harness.add_stage(mytest) // Uncomment to add stage to end of agent parallel pipeline</span>
+
+<span class="c1">// Go go</span>
+<span class="n">harness</span><span class="o">.</span><span class="na">run_stages</span><span class="o">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="stages.html" class="btn btn-neutral float-right" title="Pipeline Stage Library" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="SDG Jenkins Shared Libary’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Travis F. Collins &lt;travis.collins@analog.com&gt;
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
