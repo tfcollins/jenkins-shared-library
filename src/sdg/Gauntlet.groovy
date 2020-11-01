@@ -31,6 +31,7 @@ def construct(List dependencies, hdlBranch, linuxBranch, firmwareVersion, bootfi
             enable_docker: false,
             docker_image: 'tfcollins/sw-ci:latest',
             docker_args: ['MATLAB','Vivado'],
+            enable_update_boot_pre_docker: false,
             setup_called: false,
             nebula_debug: false,
             nebula_local_fs_source_root: '/var/lib/tftpboot',
@@ -200,6 +201,8 @@ private def run_agents() {
     def jobs = [:]
     def num_boards = gauntEnv.boards.size()
     def docker_args = getDockerConfig(gauntEnv.docker_args)
+    def enable_update_boot_pre_docker = gauntEnv.enable_update_boot_pre_docker
+    def pre_docker_cls = stage_library("UpdateBOOTFiles")
     docker_args.add("-v /etc/default:/default:ro")
     docker_args.add("-v /dev:/dev")
     if (docker_args instanceof List) {
@@ -218,10 +221,12 @@ private def run_agents() {
         }
     }
     
-    def oneNodeDocker = { agent, num_stages, stages, board, docker_image_name  ->
+    def oneNodeDocker = { agent, num_stages, stages, board, docker_image_name, enable_update_boot_pre_docker, pre_docker_cls  ->
         def k
         node(agent) {
             try {
+                if (enable_update_boot_pre_docker)
+                    pre_docker_cls.call(board)
                 docker.image(docker_image_name).inside(docker_args) {
                     try {
                         stage('Setup Docker') {
@@ -268,7 +273,7 @@ jobs[agent+"-"+board] = {
 }
 */
         if (gauntEnv.enable_docker)
-            jobs[agent + '-' + board] = { oneNodeDocker(agent, num_stages, stages, board, docker_image) };
+            jobs[agent + '-' + board] = { oneNodeDocker(agent, num_stages, stages, board, docker_image, enable_update_boot_pre_docker, pre_docker_cls) };
         else
             jobs[agent + '-' + board] = { oneNode(agent, num_stages, stages, board) };
     }
@@ -327,6 +332,14 @@ def set_docker_args(docker_args) {
  */
 def set_enable_docker(enable_docker) {
     gauntEnv.enable_docker = enable_docker
+}
+
+/**
+ * Enable update boot to be run before docker is launched.
+ * @param set_enable_update_boot_pre_docker boolean True will run update boot stage before docker is launch
+ */
+def set_enable_update_boot_pre_docker(enable_update_boot_pre_docker) {
+    gauntEnv.enable_update_boot_pre_docker = enable_update_boot_pre_docker
 }
 
 private def check_required_hardware() {
