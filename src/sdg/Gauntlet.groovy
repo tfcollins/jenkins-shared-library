@@ -221,12 +221,12 @@ private def run_agents() {
         }
     }
     
-    def oneNodeDocker = { agent, num_stages, stages, board, docker_image_name, enable_update_boot_pre_docker_flag, pre_docker_cls  ->
+    def oneNodeDocker = { agent, num_stages, stages, board, docker_image_name, enable_update_boot_pre_docker_flag, pre_docker_closure  ->
         def k
         node(agent) {
             try {
                 if (enable_update_boot_pre_docker_flag)
-                    pre_docker_cls.call(board)
+                    pre_docker_closure.call(board)
                 docker.image(docker_image_name).inside(docker_args) {
                     try {
                         stage('Setup Docker') {
