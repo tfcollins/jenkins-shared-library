@@ -152,7 +152,7 @@ def stage_library(String stage_name) {
                         run_i('pip3 install pylibiio')
                         run_i('mkdir testxml')
                         board = board.replaceAll('-', '_')
-                        cmd = "python3 -m pytest --junitxml=testxml/" + board + "_reports.xml --adi-hw-map-v -k 'not stress' -s --uri='ip:"+ip+"' -m " + board
+                        cmd = "python3 -m pytest --junitxml=testxml/" + board + "_reports.xml --adi-hw-map -v -k 'not stress' -s --uri='ip:"+ip+"' -m " + board
                         def statusCode = sh script:cmd, returnStatus:true
                         if ((statusCode != 5) && (statusCode != 0)) // Ignore error 5 which means no tests were run
                             error "Error code: "+statusCode.toString()
