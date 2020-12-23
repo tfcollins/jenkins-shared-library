@@ -1,5 +1,5 @@
 
-def call(java.util.ArrayList listOfResources, UseNFS=false) {
+def call(java.util.ArrayList listOfResources, matlabHSPro=true, UseNFS=false) {
     assert listOfResources instanceof java.util.List
 
     args = ['--privileged']
@@ -10,12 +10,18 @@ def call(java.util.ArrayList listOfResources, UseNFS=false) {
             if (UseNFS) {
                 args.add('-v "/nfs/apps/MATLAB":"/usr/local/MATLAB":ro')
                 args.add('-v "/nfs/apps/resources/dot_matlab":"/root/.matlabro":ro')
-                args.add('-v "/nfs/apps/resources/mlhsp":"/mlhsp":ro')
+                if (matlabHSPro)
+                    args.add('-v "/nfs/apps/resources/mlhsp":"/mlhsp":ro')
+                else
+                    args.add('-v "/nfs/apps/resources/mlhsp":"/mlhspro":ro')
             }
         else {
                 args.add('-v "/usr/local/MATLAB":"/usr/local/MATLAB":ro')
                 args.add('-v "/root/.matlab":"/root/.matlabro":ro')
-                args.add('-v "/mlhsp":"/mlhsp":ro')
+                if (matlabHSPro)
+                    args.add('-v "/mlhsp":"/mlhsp":ro')
+                else
+                    args.add('-v "/mlhsp":"/mlhspro":ro')
         }
         // Add correct MAC to licenses work in Docker
         withCredentials([string(credentialsId: 'MAC_ADDR', variable: 'MAC_ADDR')]) {
