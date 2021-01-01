@@ -30,11 +30,12 @@ def construct(List dependencies, hdlBranch, linuxBranch, firmwareVersion, bootfi
             required_hardware: [],
             enable_docker: false,
             docker_image: 'tfcollins/sw-ci:latest',
-            docker_args: ['MATLAB','Vivado'],
+            docker_args: ['MATLAB', 'Vivado'],
             enable_update_boot_pre_docker: false,
             setup_called: false,
             nebula_debug: false,
             nebula_local_fs_source_root: '/var/lib/tftpboot',
+            elastic_server: '',
             configure_called: false
     ]
 
@@ -61,7 +62,7 @@ private def setup_agents() {
         jobs[agent_name] = {
             node(agent_name) {
                 stage('Query agents') {
-                    setupAgent(['nebula','libiio'])
+                    setupAgent(['nebula', 'libiio', 'telemetry'])
                     // Get necessary configuration for basic work
                     board = nebula('update-config board-config board-name')
                     board_map[agent_name] = board
@@ -75,7 +76,7 @@ private def setup_agents() {
     }
 
     gauntEnv.board_map = board_map
-    (agents, boards) = splitMap(board_map,true)
+    (agents, boards) = splitMap(board_map, true)
     gauntEnv.agents = agents
     gauntEnv.boards = boards
 }
@@ -91,19 +92,22 @@ def stage_library(String stage_name) {
             println('Added Stage UpdateBOOTFiles')
             cls = { String board ->
                 try {
-                stage('Update BOOT Files') {
-                    println("Board name passed: "+board)
-                    if (board=="pluto")
+                    stage('Update BOOT Files') {
+                        println('Board name passed: ' + board)
+                        if (board == 'pluto') {
                         nebula('dl.bootfiles --board-name=' + board + ' --branch=' + gauntEnv.firmwareVersion)
-                    else
+                        }
+                    else {
                         nebula('dl.bootfiles --board-name=' + board + ' --source-root="' + gauntEnv.nebula_local_fs_source_root + '" --source=' + gauntEnv.bootfile_source)
-                    nebula('manager.update-boot-files --board-name=' + board + ' --folder=outs', full=false, show_log=true)
-                    if (board=="pluto")
+                    }
+                        nebula('manager.update-boot-files --board-name=' + board + ' --folder=outs', full = false, show_log = true)
+                        if (board == 'pluto') {
                         nebula('uart.set-local-nic-ip-from-usbdev')
+                        }
                 }}
-                catch(Exception ex) {
-                    cleanWs();
-                    throw new Exception('Update boot files failed');
+                catch (Exception ex) {
+                    cleanWs()
+                    throw new Exception('Update boot files failed')
                 }
       };
             break
@@ -115,6 +119,31 @@ def stage_library(String stage_name) {
                 }
       };
             break
+    case 'SendResults':
+            println('Added Stage SendResults')
+            cls = { String board ->
+                stage('SendLogsToElastic') {
+                    echo 'Starting send log to elastic search'
+                    cmd = "boot_folder_name "+board
+                    cmd +=" hdl_hash NA"
+                    cmd +=" linux_hash NA"
+                    cmd +=" hdl_branch NA"
+                    cmd +=" linux_branch NA"
+                    cmd +=" is_hdl_release False"
+                    cmd +=" is_linux_release False"
+                    cmd +=" uboot_reached False"
+                    cmd +=" linux_prompt_reached False"
+                    cmd +=" drivers_enumerated False"
+                    cmd +=" dmesg_warnings_found False"
+                    cmd +=" dmesg_errors_found False"
+                    // cmd +="jenkins_job_date datetime.datetime.now(),
+                    cmd +=" jenkins_build_number " + env.BUILD_NUMBER
+                    cmd +=" jenkins_project_name " + env.JOB_NAME
+                    cmd +=" jenkins_agent " + env.NODE_NAME
+                    sendLogsToElastic(cmd)
+                }
+      };
+            break
     case 'LinuxTests':
             println('Added Stage LinuxTests')
             cls = { String board ->
@@ -122,55 +151,54 @@ def stage_library(String stage_name) {
                     stage('Linux Tests') {
                         run_i('pip3 install pylibiio')
                         //def ip = nebula('uart.get-ip')
-                        def ip = nebula('update-config network-config dutip --board-name='+board)
+                        def ip = nebula('update-config network-config dutip --board-name=' + board)
                         nebula("net.check-dmesg --ip='"+ip+"'")
-                        nebula('driver.check-iio-devices --uri="ip:'+ip+'" --board-name='+board)
+                        nebula('driver.check-iio-devices --uri="ip:'+ip+'" --board-name=' + board)
                     }
                 }
         finally {
                     // Rename logs
-                    run_i("mv dmesg.log dmesg_" + board + ".log")
-                    run_i("mv dmesg_err.log dmesg_" + board + "_err.log")
-                    run_i("mv dmesg_warn.log dmesg_" + board + "_warn.log")
+                    run_i('mv dmesg.log dmesg_' + board + '.log')
+                    run_i('mv dmesg_err.log dmesg_' + board + '_err.log')
+                    run_i('mv dmesg_warn.log dmesg_' + board + '_warn.log')
                     archiveArtifacts artifacts: '*.log', followSymlinks: false, allowEmptyArchive: true
         }
       };
             break
     case 'PyADITests':
             cls = { String board ->
-                try
-                {
-                stage('Run Python Tests') {
-                    //def ip = nebula('uart.get-ip')
-                    def ip = nebula('update-config network-config dutip --board-name='+board)
-                    println('IP: ' + ip)
-                    sh 'git clone -b "' + gauntEnv.pyadiBranch + '" https://github.com/analogdevicesinc/pyadi-iio.git'
-                    dir('pyadi-iio')
+                try {
+                    stage('Run Python Tests') {
+                        //def ip = nebula('uart.get-ip')
+                        def ip = nebula('update-config network-config dutip --board-name=' + board)
+                        println('IP: ' + ip)
+                        sh 'git clone -b "' + gauntEnv.pyadiBranch + '" https://github.com/analogdevicesinc/pyadi-iio.git'
+                        dir('pyadi-iio')
             {
-                        run_i('pip3 install -r requirements.txt')
-                        run_i('pip3 install -r requirements_dev.txt')
-                        run_i('pip3 install pylibiio')
-                        run_i('mkdir testxml')
-                        board = board.replaceAll('-', '_')
-                        cmd = "python3 -m pytest --junitxml=testxml/" + board + "_reports.xml --adi-hw-map -v -k 'not stress' -s --uri='ip:"+ip+"' -m " + board
-                        def statusCode = sh script:cmd, returnStatus:true
-                        if ((statusCode != 5) && (statusCode != 0)) // Ignore error 5 which means no tests were run
-                            error "Error code: "+statusCode.toString()
+                            run_i('pip3 install -r requirements.txt')
+                            run_i('pip3 install -r requirements_dev.txt')
+                            run_i('pip3 install pylibiio')
+                            run_i('mkdir testxml')
+                            board = board.replaceAll('-', '_')
+                            cmd = 'python3 -m pytest --junitxml=testxml/' + board + "_reports.xml --adi-hw-map -v -k 'not stress' -s --uri='ip:"+ip+"' -m " + board
+                            def statusCode = sh script:cmd, returnStatus:true
+                            if ((statusCode != 5) && (statusCode != 0)) // Ignore error 5 which means no tests were run
+                            error 'Error code: ' + statusCode.toString()
             }
-                }
+                    }
                 }
                 finally
                 {
-                    junit testResults: 'pyadi-iio/testxml/*.xml', allowEmptyResults: true                    
+                    junit testResults: 'pyadi-iio/testxml/*.xml', allowEmptyResults: true
                 }
             }
             break
       default:
         throw new Exception('Unknown library stage: ' + stage_name)
-    }
+            }
 
     return cls
-}
+    }
 
 /**
  * Add stage to agent pipeline
@@ -181,19 +209,17 @@ def add_stage(cls) {
 }
 
 private def collect_logs() {
-    
     def num_boards = gauntEnv.boards.size()
-    
+
     node('master') {
         stage('Collect Logs') {
             for (i = 0; i < num_boards; i++) {
                 def agent = gauntEnv.agents[i]
                 def board = gauntEnv.boards[i]
-                println("Processing log for board: "+board+" ("+agent+")")
+                println('Processing log for board: ' + board + ' (' + agent + ')')
             }
         }
     }
-    
 }
 
 private def run_agents() {
@@ -202,48 +228,48 @@ private def run_agents() {
     def num_boards = gauntEnv.boards.size()
     def docker_args = getDockerConfig(gauntEnv.docker_args)
     def enable_update_boot_pre_docker = gauntEnv.enable_update_boot_pre_docker
-    def pre_docker_cls = stage_library("UpdateBOOTFiles")
-    docker_args.add("-v /etc/default:/default:ro")
-    docker_args.add("-v /dev:/dev")
+    def pre_docker_cls = stage_library('UpdateBOOTFiles')
+    docker_args.add('-v /etc/default:/default:ro')
+    docker_args.add('-v /dev:/dev')
     if (docker_args instanceof List) {
         docker_args = docker_args.join(' ')
     }
 
-    
     def oneNode = { agent, num_stages, stages, board  ->
         def k
         node(agent) {
             for (k = 0; k < num_stages; k++) {
-                println("Stage called for board: "+board)
+                println('Stage called for board: ' + board)
                 stages[k].call(board)
             }
-            cleanWs();
+            cleanWs()
         }
     }
-    
+
     def oneNodeDocker = { agent, num_stages, stages, board, docker_image_name, enable_update_boot_pre_docker_flag, pre_docker_closure  ->
         def k
         node(agent) {
             try {
-                if (enable_update_boot_pre_docker_flag)
+                if (enable_update_boot_pre_docker_flag) {
                     pre_docker_closure.call(board)
+                }
                 docker.image(docker_image_name).inside(docker_args) {
                     try {
                         stage('Setup Docker') {
                             sh 'cp /default/nebula /etc/default/nebula'
                             sh 'cp /default/pyadi_test.yaml /etc/default/pyadi_test.yaml || true'
-                            setupAgent(['libiio','nebula'], true);
+                            setupAgent(['libiio', 'nebula'], true)
                             // Above cleans up so we need to move to a valid folder
                             sh 'cd /tmp'
                         }
                         for (k = 0; k < num_stages; k++) {
-                            println("Stage called for board: "+board)
+                            println('Stage called for board: ' + board)
                             stages[k].call(board)
                         }
                     }
                     finally {
-                        println("Cleaning up after board stages");
-                        cleanWs();
+                        println('Cleaning up after board stages')
+                        cleanWs()
                     }
                 }
             }
@@ -259,7 +285,7 @@ private def run_agents() {
         def stages = gauntEnv.stages
         def docker_image = gauntEnv.docker_image
         def num_stages = stages.size()
-        
+
         println('Agent: ' + agent + ' Board: ' + board)
         println('Number of stages to run: ' + num_stages.toString())
 /*
@@ -272,16 +298,16 @@ jobs[agent+"-"+board] = {
   }
 }
 */
-        if (gauntEnv.enable_docker)
+        if (gauntEnv.enable_docker) {
             jobs[agent + '-' + board] = { oneNodeDocker(agent, num_stages, stages, board, docker_image, enable_update_boot_pre_docker, pre_docker_cls) };
-        else
+        else {
             jobs[agent + '-' + board] = { oneNode(agent, num_stages, stages, board) };
-    }
+        }
 
     stage('Update and Test') {
         parallel jobs
     }
-}
+        }
 
 /**
  * Set list of required devices for test
@@ -292,6 +318,14 @@ jobs[agent+"-"+board] = {
 def set_required_hardware(List board_names) {
     assert board_names instanceof java.util.List
     gauntEnv.required_hardware = board_names
+}
+
+/**
+ * Set elastic server address. Setting will use a non-default elastic search server
+ * @param elastic_server String of server IP
+ */
+def set_elastic_server(elastic_server) {
+    gauntEnv.elastic_server = elastic_server
 }
 
 /**
@@ -348,9 +382,9 @@ private def check_required_hardware() {
     def filtered_board_list = []
     def filtered_agent_list = []
 
-    println("Found boards:")
+    println('Found boards:')
     for (k = 0; k < b; k++) {
-        println("Agent: "+gauntEnv.agents[k]+" Board: "+gauntEnv.boards[k])
+        println('Agent: ' + gauntEnv.agents[k] + ' Board: ' + gauntEnv.boards[k])
     }
     for (i = 0; i < s; i++) {
         if (! gauntEnv.boards.contains(gauntEnv.required_hardware[i]) ) {
@@ -385,17 +419,15 @@ def run_stages() {
 private def splitMap(map, do_split=false) {
     def keys = []
     def values = []
-    def tmp;
+    def tmp
     for (entry in map) {
-        if (do_split)
-        {
+        if (do_split) {
             tmp = entry.value
-            tmp = tmp.split(",")
+            tmp = tmp.split(',')
 
-            for (i=0;i<tmp.size();i++)
-            {
+            for (i = 0; i < tmp.size(); i++) {
                 keys.add(entry.key)
-                values.add(tmp[i].replaceAll(" ",""))
+                values.add(tmp[i].replaceAll(' ', ''))
             }
         }
         else
@@ -477,6 +509,43 @@ def nebula(cmd, full=false, show_log=false) {
     return out
 }
 
+def sendLogsToElastic(... args) {
+    full = false
+    cmd = args.join(' ')
+    if (gauntEnv.elastic_server) {
+        cmd = " --server=" + gauntEnv.elastic_server + cmd
+    }
+    cmd = 'telemetry log-boot-logs ' + cmd
+    println(cmd)
+    if (checkOs() == 'Windows') {
+        script_out = bat(script: cmd, returnStdout: true).trim()
+    }
+    else {
+        script_out = sh(script: cmd, returnStdout: true).trim()
+    }
+    // Remove lines
+    out = ''
+    if (!full) {
+        lines = script_out.split('\n')
+        if (lines.size() == 1) {
+            return script_out
+        }
+        out = ''
+        added = 0
+        for (i = 1; i < lines.size(); i++) {
+            if (lines[i].contains('WARNING')) {
+                continue
+            }
+            if (added > 0) {
+                out = out + '\n'
+            }
+            out = out + lines[i]
+            added = added + 1
+        }
+    }
+    return out
+}
+
 private def install_nebula() {
     if (checkOs() == 'Windows') {
         bat 'git clone https://github.com/tfcollins/nebula.git'
@@ -492,6 +561,26 @@ private def install_nebula() {
         dir('nebula')
         {
             sh 'pip3 install -r requirements.txt'
+            sh 'python3 setup.py install'
+        }
+    }
+}
+
+private def install_telemetry() {
+    if (checkOs() == 'Windows') {
+        bat 'git clone https://github.com/tfcollins/telemetry.git'
+        dir('telemetry')
+        {
+            bat 'pip install -r requirements_dev.txt'
+            bat 'python setup.py install'
+        }
+    }
+    else {
+        sh 'pip3 uninstall telemetry -y || true'
+        sh 'git clone https://github.com/tfcollins/telemetry.git'
+        dir('nebula')
+        {
+            sh 'pip3 install -r requirements_dev.txt'
             sh 'python3 setup.py install'
         }
     }
@@ -530,7 +619,7 @@ private def install_libiio() {
 
 private def setupAgent(deps, skip_cleanup = false) {
     try {
-        def i;
+        def i
         for (i = 0; i < deps.size; i++) {
             println(deps[i])
             if (deps[i] == 'nebula') {
@@ -539,11 +628,15 @@ private def setupAgent(deps, skip_cleanup = false) {
             if (deps[i] == 'libiio') {
                 install_libiio()
             }
+            if (deps[i] == 'telemetry') {
+                install_telemetry()
+            }
         }
     }
     finally {
-        if (!skip_cleanup)
+        if (!skip_cleanup) {
             cleanWs()
+        }
     }
 }
 
