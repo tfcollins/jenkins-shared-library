@@ -580,7 +580,7 @@ private def install_telemetry() {
     else {
         sh 'pip3 uninstall telemetry -y || true'
         sh 'git clone https://github.com/tfcollins/telemetry.git'
-        dir('nebula')
+        dir('telemetry')
         {
             sh 'pip3 install -r requirements_dev.txt'
             sh 'python3 setup.py install'
