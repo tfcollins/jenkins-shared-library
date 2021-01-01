@@ -95,14 +95,14 @@ def stage_library(String stage_name) {
                     stage('Update BOOT Files') {
                         println('Board name passed: ' + board)
                         if (board == 'pluto') {
-                        nebula('dl.bootfiles --board-name=' + board + ' --branch=' + gauntEnv.firmwareVersion)
+                            nebula('dl.bootfiles --board-name=' + board + ' --branch=' + gauntEnv.firmwareVersion)
                         }
                     else {
-                        nebula('dl.bootfiles --board-name=' + board + ' --source-root="' + gauntEnv.nebula_local_fs_source_root + '" --source=' + gauntEnv.bootfile_source)
+                            nebula('dl.bootfiles --board-name=' + board + ' --source-root="' + gauntEnv.nebula_local_fs_source_root + '" --source=' + gauntEnv.bootfile_source)
                     }
                         nebula('manager.update-boot-files --board-name=' + board + ' --folder=outs', full = false, show_log = true)
                         if (board == 'pluto') {
-                        nebula('uart.set-local-nic-ip-from-usbdev')
+                            nebula('uart.set-local-nic-ip-from-usbdev')
                         }
                 }}
                 catch (Exception ex) {
@@ -124,22 +124,22 @@ def stage_library(String stage_name) {
             cls = { String board ->
                 stage('SendLogsToElastic') {
                     echo 'Starting send log to elastic search'
-                    cmd = "boot_folder_name "+board
-                    cmd +=" hdl_hash NA"
-                    cmd +=" linux_hash NA"
-                    cmd +=" hdl_branch NA"
-                    cmd +=" linux_branch NA"
-                    cmd +=" is_hdl_release False"
-                    cmd +=" is_linux_release False"
-                    cmd +=" uboot_reached False"
-                    cmd +=" linux_prompt_reached False"
-                    cmd +=" drivers_enumerated False"
-                    cmd +=" dmesg_warnings_found False"
-                    cmd +=" dmesg_errors_found False"
+                    cmd = 'boot_folder_name ' + board
+                    cmd += ' hdl_hash NA'
+                    cmd += ' linux_hash NA'
+                    cmd += ' hdl_branch NA'
+                    cmd += ' linux_branch NA'
+                    cmd += ' is_hdl_release False'
+                    cmd += ' is_linux_release False'
+                    cmd += ' uboot_reached False'
+                    cmd += ' linux_prompt_reached False'
+                    cmd += ' drivers_enumerated False'
+                    cmd += ' dmesg_warnings_found False'
+                    cmd += ' dmesg_errors_found False'
                     // cmd +="jenkins_job_date datetime.datetime.now(),
-                    cmd +=" jenkins_build_number " + env.BUILD_NUMBER
-                    cmd +=" jenkins_project_name " + env.JOB_NAME
-                    cmd +=" jenkins_agent " + env.NODE_NAME
+                    cmd += ' jenkins_build_number ' + env.BUILD_NUMBER
+                    cmd += ' jenkins_project_name ' + env.JOB_NAME
+                    cmd += ' jenkins_agent ' + env.NODE_NAME
                     sendLogsToElastic(cmd)
                 }
       };
@@ -300,14 +300,16 @@ jobs[agent+"-"+board] = {
 */
         if (gauntEnv.enable_docker) {
             jobs[agent + '-' + board] = { oneNodeDocker(agent, num_stages, stages, board, docker_image, enable_update_boot_pre_docker, pre_docker_cls) };
+        }
         else {
             jobs[agent + '-' + board] = { oneNode(agent, num_stages, stages, board) };
         }
+    }
 
     stage('Update and Test') {
         parallel jobs
     }
-        }
+}
 
 /**
  * Set list of required devices for test
@@ -513,7 +515,7 @@ def sendLogsToElastic(... args) {
     full = false
     cmd = args.join(' ')
     if (gauntEnv.elastic_server) {
-        cmd = " --server=" + gauntEnv.elastic_server + cmd
+        cmd = ' --server=' + gauntEnv.elastic_server + cmd
     }
     cmd = 'telemetry log-boot-logs ' + cmd
     println(cmd)
