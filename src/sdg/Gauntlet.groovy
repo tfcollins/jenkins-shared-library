@@ -515,7 +515,7 @@ def sendLogsToElastic(... args) {
     full = false
     cmd = args.join(' ')
     if (gauntEnv.elastic_server) {
-        cmd = ' --server=' + gauntEnv.elastic_server + cmd
+        cmd = ' --server=' + gauntEnv.elastic_server + ' ' + cmd
     }
     cmd = 'telemetry log-boot-logs ' + cmd
     println(cmd)
