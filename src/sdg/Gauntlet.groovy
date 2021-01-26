@@ -99,7 +99,7 @@ def stage_library(String stage_name) {
                         nebula('dl.bootfiles --board-name=' + board + ' --source-root="' + gauntEnv.nebula_local_fs_source_root + '" --source=' + gauntEnv.bootfile_source)
                     nebula('manager.update-boot-files --board-name=' + board + ' --folder=outs', full=false, show_log=true)
                     if (board=="pluto")
-                        nebula('uart.set-local-nic-ip-from-usbdev')
+                        nebula('uart.set-local-nic-ip-from-usbdev --board-name=' + board)
                 }}
                 catch(Exception ex) {
                     cleanWs();
