@@ -11,9 +11,10 @@ gauntEnv
  * @param linuxBranch - String of name of linux branch to use for bootfile source
  * @param firmwareVersion - String of name of firmware version branch to use for pluto and m2k
  * @param bootfile_source - String location of bootfiles. Options: sftp, artifactory, http, local
+ * @param libad9361Version - String name of the ad9361 lib branch to be used.
  * @return constructed object
  */
-def construct(List dependencies, hdlBranch, linuxBranch, firmwareVersion, bootfile_source) {
+def construct(List dependencies, hdlBranch, linuxBranch, firmwareVersion, bootfile_source, libad9361Version) {
     gauntEnv = [
             dependencies: dependencies,
             hdlBranch: hdlBranch,
@@ -35,7 +36,8 @@ def construct(List dependencies, hdlBranch, linuxBranch, firmwareVersion, bootfi
             setup_called: false,
             nebula_debug: false,
             nebula_local_fs_source_root: '/var/lib/tftpboot',
-            configure_called: false
+            configure_called: false,
+            libad9361Version: libad9361Version
     ]
 
     gauntEnv.agents_online = getOnlineAgents()
@@ -96,10 +98,11 @@ def stage_library(String stage_name) {
                     if (board=="pluto")
                         nebula('dl.bootfiles --board-name=' + board + ' --branch=' + gauntEnv.firmwareVersion)
                     else
-                        nebula('dl.bootfiles --board-name=' + board + ' --source-root="' + gauntEnv.nebula_local_fs_source_root + '" --source=' + gauntEnv.bootfile_source)
+                        nebula('dl.bootfiles --board-name=' + board + ' --source-root="' + gauntEnv.nebula_local_fs_source_root + '" --source=' + gauntEnv.bootfile_source
+                                + ' --branch=' + gauntEnv.linuxBranch)
                     nebula('manager.update-boot-files --board-name=' + board + ' --folder=outs', full=false, show_log=true)
                     if (board=="pluto")
-                        nebula('uart.set-local-nic-ip-from-usbdev')
+                        nebula('uart.set-local-nic-ip-from-usbdev --board-name=' + board)
                 }}
                 catch(Exception ex) {
                     cleanWs();
@@ -165,7 +168,39 @@ def stage_library(String stage_name) {
                 }
             }
             break
-      default:
+    case 'LibAD9361Tests':
+            cls = { String board ->
+                def supported_boards = ['zynq-zed-adv7511-ad9361-fmcomms2-3',
+                                        'zynq-adrv9361-z7035-fmc',
+                                        'pluto']
+                if(supported_boards.contains(board) && gauntEnv.libad9361Version != null){
+                    try{
+                        stage("Test libad9361") {
+                            def ip = nebula("update-config -s network-config -f dutip --board-name="+board)
+                            sh 'git clone -b '+ gauntEnv.libad9361Version + ' https://github.com/analogdevicesinc/libad9361-iio.git'
+                            dir('libad9361-iio')
+                            {
+                                sh 'mkdir build'
+                                dir('build')
+                                {
+                                    sh 'cmake ..'
+                                    sh 'make'
+                                    sh 'URI_AD9361="ip:'+ip+'" ctest -T test --no-compress-output -V'
+                                }
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        dir('libad9361-iio/build'){
+                            xunit([CTest(deleteOutputFiles: true, failIfNotNew: true, pattern: 'Testing/**/*.xml', skipNoTestFiles: false, stopProcessingIfError: true)])
+                        }
+                    }
+                }else{
+                    println("LibAD9361Tests: Skipping board: "+board)
+                }
+            }
+    default:
         throw new Exception('Unknown library stage: ' + stage_name)
     }
 
