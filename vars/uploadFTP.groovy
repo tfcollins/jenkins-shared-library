@@ -45,6 +45,26 @@ def call(project, filename) {
             target = target + 'dev'
     }
   }
+  else if (project == 'SensorToolbox') {
+        ext = '.mltbx'
+        target = 'toolboxes/sensor/'
+
+        // Determine branch
+        def branch = env.BRANCH_NAME
+        if (!env.BRANCH_NAME) {
+            println('Branch name not found in environment, checking through git')
+            sh 'git branch > branchname'
+            sh 'sed -i "s/[*]//" branchname'
+            branch = readFile('branchname').trim()
+        }
+        println('Found branch: ' + branch)
+        if (branch == 'master') {
+            target = target + 'master'
+        }
+    else {
+            target = target + 'dev'
+    }
+  }
   else {
         println('Unknown project... returning')
         return
