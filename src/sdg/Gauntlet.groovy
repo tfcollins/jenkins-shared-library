@@ -29,6 +29,8 @@ def construct(List dependencies, hdlBranch, linuxBranch, firmwareVersion, bootfi
             boards: [],
             required_hardware: [],
             enable_docker: false,
+            UseNFS: false,
+            matlabHSPro: true,
             docker_image: 'tfcollins/sw-ci:latest',
             docker_args: ['MATLAB', 'Vivado'],
             enable_update_boot_pre_docker: false,
@@ -226,7 +228,7 @@ private def run_agents() {
     // Start stages for each node with a board
     def jobs = [:]
     def num_boards = gauntEnv.boards.size()
-    def docker_args = getDockerConfig(gauntEnv.docker_args)
+    def docker_args = getDockerConfig(gauntEnv.docker_args, gauntEnv.matlabHSPro, gauntEnv.UseNFS)
     def enable_update_boot_pre_docker = gauntEnv.enable_update_boot_pre_docker
     def pre_docker_cls = stage_library('UpdateBOOTFiles')
     docker_args.add('-v /etc/default:/default:ro')
@@ -369,6 +371,15 @@ def set_docker_args(docker_args) {
 def set_enable_docker(enable_docker) {
     gauntEnv.enable_docker = enable_docker
 }
+
+/**
+ * Enable use of docker at agent during jobs phases.
+ * @param enable_docker boolean True will enable use of docker
+ */
+def set_docker_use_nfs(UseNFS) {
+    gauntEnv.UseNFS = UseNFS
+}
+
 
 /**
  * Enable update boot to be run before docker is launched.
