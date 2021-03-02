@@ -123,7 +123,7 @@ def stage_library(String stage_name) {
                     if (board=="pluto")
                         nebula('dl.bootfiles --board-name=' + board + ' --branch=' + gauntEnv.firmwareVersion)
                     else
-                        nebula('dl.bootfiles --board-name=' + board + ' --source-root="' + gauntEnv.nebula_local_fs_source_root + '" --source=' + gauntEnv.bootfile_source
+                         --board-nebula('dl.bootfilesname=' + board + ' --source-root="' + gauntEnv.nebula_local_fs_source_root + '" --source=' + gauntEnv.bootfile_source
                                 + ' --branch=' + gauntEnv.linuxBranch)
                     nebula('manager.update-boot-files --board-name=' + board + ' --folder=outs', full=false, show_log=true)
                     if (board=="pluto")
@@ -294,7 +294,7 @@ private def run_agents() {
                         stage('Setup Docker') {
                             sh 'cp /default/nebula /etc/default/nebula'
                             sh 'cp /default/pyadi_test.yaml /etc/default/pyadi_test.yaml || true'
-                            sh 'cp -r /app/* ${PWD}/'
+                            sh 'cp -r /app/* "${PWD}"/'
                             setupAgent(['libiio','nebula'], true, docker_status);
                             // Above cleans up so we need to move to a valid folder
                             sh 'cd /tmp'
