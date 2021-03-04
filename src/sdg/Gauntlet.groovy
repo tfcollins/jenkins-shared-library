@@ -63,7 +63,6 @@ private def setup_agents() {
         jobs[agent_name] = {
             node(agent_name) {
                 stage('Query agents') {
-                    setupAgent(['nebula','libiio'])
                     // Get necessary configuration for basic work
                     board = nebula('update-config board-config board-name')
                     board_map[agent_name] = board
@@ -80,6 +79,32 @@ private def setup_agents() {
     (agents, boards) = splitMap(board_map,true)
     gauntEnv.agents = agents
     gauntEnv.boards = boards
+}
+
+private def update_agent() {
+    def docker_status = gauntEnv.enable_docker
+    def board_map = [:]
+
+    // Query each agent for their connected hardware
+    def jobs = [:]
+    for (agent in gauntEnv.agents_online) {
+        println('Agent: ' + agent)
+
+        def agent_name = agent
+
+        jobs[agent_name] = {
+            node(agent_name) {
+                stage('Update agents') {
+                    sh 'mkdir -p /usr/app'
+                    setupAgent(['nebula','libiio'], false, docker_status)
+                }
+            }
+        }
+    }
+
+    stage('Update Agents Tools') {
+        parallel jobs
+    }
 }
 
 /**
@@ -233,19 +258,21 @@ private def collect_logs() {
 
 private def run_agents() {
     // Start stages for each node with a board
+    def docker_status = gauntEnv.enable_docker
     def jobs = [:]
     def num_boards = gauntEnv.boards.size()
     def docker_args = getDockerConfig(gauntEnv.docker_args)
     def enable_update_boot_pre_docker = gauntEnv.enable_update_boot_pre_docker
     def pre_docker_cls = stage_library("UpdateBOOTFiles")
-    docker_args.add("-v /etc/default:/default:ro")
-    docker_args.add("-v /dev:/dev")
+    docker_args.add('-v /etc/default:/default:ro')
+    docker_args.add('-v /dev:/dev')
+    docker_args.add('-v /usr/app:/app')
     if (docker_args instanceof List) {
         docker_args = docker_args.join(' ')
     }
 
     
-    def oneNode = { agent, num_stages, stages, board  ->
+    def oneNode = { agent, num_stages, stages, board, docker_stat  ->
         def k
         node(agent) {
             for (k = 0; k < num_stages; k++) {
@@ -256,7 +283,7 @@ private def run_agents() {
         }
     }
     
-    def oneNodeDocker = { agent, num_stages, stages, board, docker_image_name, enable_update_boot_pre_docker_flag, pre_docker_closure  ->
+    def oneNodeDocker = { agent, num_stages, stages, board, docker_image_name, enable_update_boot_pre_docker_flag, pre_docker_closure, docker_stat ->
         def k
         node(agent) {
             try {
@@ -267,7 +294,8 @@ private def run_agents() {
                         stage('Setup Docker') {
                             sh 'cp /default/nebula /etc/default/nebula'
                             sh 'cp /default/pyadi_test.yaml /etc/default/pyadi_test.yaml || true'
-                            setupAgent(['libiio','nebula'], true);
+                            sh 'cp -r /app/* "${PWD}"/'
+                            setupAgent(['libiio','nebula'], true, docker_status);
                             // Above cleans up so we need to move to a valid folder
                             sh 'cd /tmp'
                         }
@@ -307,10 +335,11 @@ jobs[agent+"-"+board] = {
   }
 }
 */
-        if (gauntEnv.enable_docker)
-            jobs[agent + '-' + board] = { oneNodeDocker(agent, num_stages, stages, board, docker_image, enable_update_boot_pre_docker, pre_docker_cls) };
-        else
-            jobs[agent + '-' + board] = { oneNode(agent, num_stages, stages, board) };
+        if (gauntEnv.enable_docker) {
+            jobs[agent + '-' + board] = { oneNodeDocker(agent, num_stages, stages, board, docker_image, enable_update_boot_pre_docker, pre_docker_cls, docker_status) };
+        } else{
+            jobs[agent + '-' + board] = { oneNode(agent, num_stages, stages, board, docker_status) };
+        }
     }
 
     stage('Update and Test') {
@@ -415,6 +444,10 @@ def run_stages() {
     collect_logs()
 }
 
+def update_agents() {
+    update_agent()
+}
+
 // Private methods
 @NonCPS
 private def splitMap(map, do_split=false) {
@@ -512,9 +545,19 @@ def nebula(cmd, full=false, show_log=false) {
     return out
 }
 
-private def install_nebula() {
+private def clone_nebula() {
     if (checkOs() == 'Windows') {
         bat 'git clone https://github.com/tfcollins/nebula.git'
+    }
+    else {
+        sh 'pip3 uninstall nebula -y || true'
+        sh 'git clone https://github.com/tfcollins/nebula.git'
+        sh 'cp -r nebula /usr/app'
+    }
+}
+
+private def install_nebula() {
+    if (checkOs() == 'Windows') {
         dir('nebula')
         {
             bat 'pip install -r requirements.txt'
@@ -522,8 +565,6 @@ private def install_nebula() {
         }
     }
     else {
-        sh 'pip3 uninstall nebula -y || true'
-        sh 'git clone https://github.com/tfcollins/nebula.git'
         dir('nebula')
         {
             sh 'pip3 install -r requirements.txt'
@@ -532,9 +573,18 @@ private def install_nebula() {
     }
 }
 
-private def install_libiio() {
+private def clone_libiio() {
     if (checkOs() == 'Windows') {
         bat 'git clone https://github.com/analogdevicesinc/libiio.git'
+    }
+    else {
+        sh 'git clone -b v0.19 https://github.com/analogdevicesinc/libiio.git'
+        sh 'cp -r libiio /usr/app'
+    }
+}
+
+private def install_libiio() {
+    if (checkOs() == 'Windows') {
         dir('libiio')
         {
             bat 'mkdir build'
@@ -547,7 +597,6 @@ private def install_libiio() {
         }
     }
     else {
-        sh 'git clone -b v0.19 https://github.com/analogdevicesinc/libiio.git'
         dir('libiio')
         {
             sh 'mkdir build'
@@ -563,16 +612,26 @@ private def install_libiio() {
     }
 }
 
-private def setupAgent(deps, skip_cleanup = false) {
+private def setupAgent(deps, skip_cleanup = false, docker_status) {
     try {
         def i;
         for (i = 0; i < deps.size; i++) {
             println(deps[i])
             if (deps[i] == 'nebula') {
-                install_nebula()
+                if (docker_status) {
+                    install_nebula()
+                } else {
+                    clone_nebula()
+                    install_nebula()
+                }
             }
             if (deps[i] == 'libiio') {
-                install_libiio()
+                if (docker_status) {
+                    install_libiio()
+                } else {
+                    clone_libiio()
+                    install_libiio()
+                }
             }
         }
     }
