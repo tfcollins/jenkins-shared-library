@@ -246,10 +246,16 @@
 <span class="c1">// harness.set_required_hardware([&quot;zynq-adrv9361-z7035-fmc&quot;])</span>
 
 <span class="c1">// Set stages (stages are run sequentially on agents)</span>
+<span class="c1">// Execution type is provided to the second parameter of the &#39;add_stage&#39; method:</span>
+<span class="c1">//   &quot;stopWhenFail&quot;(Default) -&gt; stops whole pipeline execution at error</span>
+<span class="c1">//                           -&gt; set build status to &#39;FAILURE&#39;</span>
+<span class="c1">//   &quot;continueWhenFail&quot;      -&gt; stops current stage execution at error but proceeds to next.</span>
+<span class="c1">//                           -&gt; set build status to &#39;UNSTABLE&#39;</span>
 <span class="n">harness</span><span class="o">.</span><span class="na">add_stage</span><span class="o">(</span><span class="n">harness</span><span class="o">.</span><span class="na">stage_library</span><span class="o">(</span><span class="s2">&quot;UpdateBOOTFiles&quot;</span><span class="o">))</span>
-<span class="n">harness</span><span class="o">.</span><span class="na">add_stage</span><span class="o">(</span><span class="n">harness</span><span class="o">.</span><span class="na">stage_library</span><span class="o">(</span><span class="s2">&quot;LinuxTests&quot;</span><span class="o">))</span>
-<span class="n">harness</span><span class="o">.</span><span class="na">add_stage</span><span class="o">(</span><span class="n">harness</span><span class="o">.</span><span class="na">stage_library</span><span class="o">(</span><span class="s2">&quot;PyADITests&quot;</span><span class="o">))</span>
-<span class="n">harness</span><span class="o">.</span><span class="na">add_stage</span><span class="o">(</span><span class="n">harness</span><span class="o">.</span><span class="na">stage_library</span><span class="o">(</span><span class="s2">&quot;CollectLogs&quot;</span><span class="o">))</span>
+<span class="n">harness</span><span class="o">.</span><span class="na">add_stage</span><span class="o">(</span><span class="n">harness</span><span class="o">.</span><span class="na">stage_library</span><span class="o">(</span><span class="s2">&quot;LinuxTests&quot;</span><span class="o">),</span><span class="s2">&quot;stopWhenFail&quot;</span><span class="o">)</span>
+<span class="n">harness</span><span class="o">.</span><span class="na">add_stage</span><span class="o">(</span><span class="n">harness</span><span class="o">.</span><span class="na">stage_library</span><span class="o">(</span><span class="s2">&quot;PyADITests&quot;</span><span class="o">),</span><span class="s2">&quot;continueWhenFail&quot;</span><span class="o">)</span>
+<span class="n">harness</span><span class="o">.</span><span class="na">add_stage</span><span class="o">(</span><span class="n">harness</span><span class="o">.</span><span class="na">stage_library</span><span class="o">(</span><span class="s1">&#39;LibAD9361Tests&#39;</span><span class="o">),</span><span class="s2">&quot;continueWhenFail&quot;</span><span class="o">)</span>
+<span class="n">harness</span><span class="o">.</span><span class="na">add_stage</span><span class="o">(</span><span class="n">harness</span><span class="o">.</span><span class="na">stage_library</span><span class="o">(</span><span class="s2">&quot;CollectLogs&quot;</span><span class="o">),</span><span class="s2">&quot;continueWhenFail&quot;</span><span class="o">)</span>
 <span class="c1">//Above is equivalent to harness.set_default_stages()</span>
 
 

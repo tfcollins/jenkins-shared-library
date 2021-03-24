@@ -90,6 +90,20 @@ function windowTitle()
                     </tr>
 <tr class="altColor">
                             <td class="colOne">
+                                <strong><a href="FailSafeWrapper.html" title="class in sdg">
+                                    FailSafeWrapper
+                                </a></strong>
+                            </td>
+                            <td>Decorator class to wrap stage closures to ensure graceful failure
+ if stage is a requisite (i.e build status is FAILURE), 
+ use 'true' in second param
+      ex. def newCls = new FailSafe(oldCls, true)
+ if stage is not a requisite (i.e build status is UNSTABLEs), 
+ use 'false' in second param
+      ex. def newCls = new FailSafe(oldCls, false)</td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
                                 <strong><a href="Library.html" title="class in sdg">
                                     Library
                                 </a></strong>
@@ -105,6 +119,32 @@ function windowTitle()
     
 
 
+
+    <div class="summary">
+        <ul class="blockList">
+            <li class="blockList">
+                <table border="0" cellpadding="3" cellspacing="0" summary="Exception Summary">
+                    <caption><span>Exception Summary</span><span class="tabEnd">&nbsp;</span></caption>
+                    <tbody>
+                    <tr>
+                        <th class="colFirst" scope="col">Exception</th>
+                        <th class="colLast" scope="col">Description</th>
+                    </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="NominalException.html" title="class in sdg">
+                                    NominalException
+                                </a></strong>
+                            </td>
+                            <td>Custom exception for non-fatal errors</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </li>
+            </ul>
+        </div>
+    
 
 
 
