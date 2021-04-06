@@ -4,7 +4,8 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
+  <meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>Gauntlet Hardware Pipeline &mdash; SDG Jenkins Shared Libary v0.0.1 documentation</title>
@@ -85,7 +86,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Gauntlet Hardware Pipeline</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#example-jenkinsfile">Example Jenkinsfile</a></li>
@@ -161,7 +162,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="gauntlet-hardware-pipeline">
+  <section id="gauntlet-hardware-pipeline">
 <h1>Gauntlet Hardware Pipeline<a class="headerlink" href="#gauntlet-hardware-pipeline" title="Permalink to this headline">¶</a></h1>
 <p>The main purpose of this shared library is to provide a standardize pipeline for software project that want to run code against hardware targets. The figure below shows an example pipeline that is generated using the Jenkinsfile below it.</p>
 <div class="graphviz"><img src="_images/graphviz-33f0b4ca3c03e7250355e2007415cfe3189a3de8.png" alt="digraph {
@@ -222,7 +223,7 @@
 <p>These pipelines have 3 main phases. Starting from the left side of the pipeline, phase 1 is the first two horizontal stages. In the first stage each agent is queried to determined available hardware. Then in the second stage, this information is return to the master node and the necessary downstream stages are determined. This will occur in all pipeline configuration using the <strong>Gaunlet</strong> class. The generated downstream stages will be based on how the <strong>harness</strong> object is configured. In the Jenkinsfile below, four stages are added from the <a class="reference internal" href="stages.html#library-label"><span class="std std-ref">Pipeline Stage Library</span></a>. These stages are run in the order in which they are added. Each of these stages will be run for each target board configuration. By default all available hardware is used in this phase. If a single board or hardware setup is desired, the <em>set_required_hardware</em> method should be used.</p>
 <p>The final phase is for post processing, here logs and artifacts are gathered for collection. These will typically be saved to artifactory of to a logging server for analysis.</p>
 <p>The available flags are documented for reference in the Jenkinsfile below. See the generated groovydoc for explicit syntax and all available methods.</p>
-<div class="section" id="example-jenkinsfile">
+<section id="example-jenkinsfile">
 <h2>Example Jenkinsfile<a class="headerlink" href="#example-jenkinsfile" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-groovy notranslate"><div class="highlight"><pre><span></span><span class="c1">// Pipeline</span>
 
@@ -272,8 +273,8 @@
 <span class="n">harness</span><span class="o">.</span><span class="na">run_stages</span><span class="o">()</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
