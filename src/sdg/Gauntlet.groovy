@@ -312,6 +312,7 @@ private def run_agents() {
                     try {
                         stage('Setup Docker') {
                             sh 'cp /default/nebula /etc/default/nebula'
+                            sh 'cp /default/pip.conf /etc/pip.conf || true'
                             sh 'cp /default/pyadi_test.yaml /etc/default/pyadi_test.yaml || true'
                             sh 'cp -r /app/* "${PWD}"/'
                             setupAgent(['libiio','nebula'], true, docker_status);
