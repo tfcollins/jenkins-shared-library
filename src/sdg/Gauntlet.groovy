@@ -121,6 +121,7 @@ private def update_agent() {
             node(agent_name) {
                 stage('Update agents') {
                     sh 'mkdir -p /usr/app'
+                    sh 'rm -rf /usr/app/*'
                     setupAgent(['nebula','libiio', 'telemetry'], false, docker_status)
                 }
             }
