@@ -12,15 +12,13 @@ gauntEnv
  * @param linuxBranch - String of name of linux branch to use for bootfile source
  * @param firmwareVersion - String of name of firmware version branch to use for pluto and m2k
  * @param bootfile_source - String location of bootfiles. Options: sftp, artifactory, http, local
- * @param libad9361Version - String name of the ad9361 lib branch to be used.
  * @return constructed object
  */
-def construct(List dependencies, hdlBranch, linuxBranch, firmwareVersion, bootfile_source, libad9361Version) {
+def construct(List dependencies, hdlBranch, linuxBranch, firmwareVersion, bootfile_source) {
     gauntEnv = [
             dependencies: dependencies,
             hdlBranch: hdlBranch,
             linuxBranch: linuxBranch,
-            pyadiBranch: 'master',
             firmwareVersion: firmwareVersion,
             bootfile_source: bootfile_source,
             agents_online: '',
@@ -37,8 +35,20 @@ def construct(List dependencies, hdlBranch, linuxBranch, firmwareVersion, bootfi
             setup_called: false,
             nebula_debug: false,
             nebula_local_fs_source_root: '/var/lib/tftpboot',
+            elastic_server: '',
             configure_called: false,
-            libad9361Version: libad9361Version
+            pytest_libiio_repo: 'https://github.com/tfcollins/pytest-libiio.git',
+            pytest_libiio_branch: 'master',
+            pyadi_iio_repo: 'https://github.com/analogdevicesinc/pyadi-iio.git',
+            pyadi_iio_branch: 'master',
+            libad9361_iio_repo: 'https://github.com/analogdevicesinc/libad9361-iio.git',
+            libad9361_iio_branch : 'master',
+            nebula_repo: 'https://github.com/tfcollins/nebula.git',
+            nebula_branch: 'master',
+            libiio_repo: 'https://github.com/analogdevicesinc/libiio.git',
+            libiio_branch: 'master',
+            telemetry_repo: 'https://github.com/tfcollins/telemetry.git',
+            telemetry_branch: 'master'
     ]
 
     gauntEnv.agents_online = getOnlineAgents()
@@ -49,6 +59,20 @@ def construct(List dependencies, hdlBranch, linuxBranch, firmwareVersion, bootfi
  */
 def print_agents() {
     println(gauntEnv.agents_online)
+}
+
+/* *
+ * Env getter method
+ */
+def get_env(String param) {
+    return gauntEnv[param]
+}
+
+/* *
+ * Env setter method
+ */
+def set_env(String param, String value) {
+    gauntEnv[param] = value
 }
 
 private def setup_agents() {
@@ -97,7 +121,8 @@ private def update_agent() {
             node(agent_name) {
                 stage('Update agents') {
                     sh 'mkdir -p /usr/app'
-                    setupAgent(['nebula','libiio'], false, docker_status)
+                    sh 'rm -rf /usr/app/*'
+                    setupAgent(['nebula','libiio', 'telemetry'], false, docker_status)
                 }
             }
         }
@@ -144,68 +169,114 @@ def stage_library(String stage_name) {
                 }
       };
             break
+    case 'SendResults':
+            println('Added Stage SendResults')
+            cls = { String board ->
+                stage('SendLogsToElastic') {
+                    echo 'Starting send log to elastic search'
+                    cmd = 'boot_folder_name ' + board
+                    cmd += ' hdl_hash NA'
+                    cmd += ' linux_hash NA'
+                    cmd += ' hdl_branch NA'
+                    cmd += ' linux_branch NA'
+                    cmd += ' is_hdl_release False'
+                    cmd += ' is_linux_release False'
+                    cmd += ' uboot_reached False'
+                    cmd += ' linux_prompt_reached False'
+                    cmd += ' drivers_enumerated False'
+                    cmd += ' dmesg_warnings_found False'
+                    cmd += ' dmesg_errors_found False'
+                    // cmd +="jenkins_job_date datetime.datetime.now(),
+                    cmd += ' jenkins_build_number ' + env.BUILD_NUMBER
+                    cmd += ' jenkins_project_name ' + env.JOB_NAME
+                    cmd += ' jenkins_agent ' + env.NODE_NAME
+                    sendLogsToElastic(cmd)
+                }
+      };
+            break
     case 'LinuxTests':
             println('Added Stage LinuxTests')
             cls = { String board ->
-                try {
-                    stage('Linux Tests') {
+                stage('Linux Tests') {
+                    def failed_test = ''
+                    try {
                         run_i('pip3 install pylibiio')
                         //def ip = nebula('uart.get-ip')
                         def ip = nebula('update-config network-config dutip --board-name='+board)
-                        nebula("net.check-dmesg --ip='"+ip+"'")
-                        nebula('driver.check-iio-devices --uri="ip:'+ip+'" --board-name='+board)
+                        try{
+                            nebula("net.check-dmesg --ip='"+ip+"' --board-name="+board)
+                        }catch(Exception ex) {
+                            failed_test = failed_test + "[dmesg check failed: $ex]"
+                        }
+
+                        try{
+                            nebula('driver.check-iio-devices --uri="ip:'+ip+'" --board-name='+board)
+                        }catch(Exception ex) {
+                            failed_test = failed_test + " [iio_devices check failed: $ex]"
+                        }
+                        if(failed_test && !failed_test.allWhitespace){
+                            throw new Exception("failed_test")
+                        }
+                    }catch(Exception ex) {
+                        throw new NominalException("Linux Test Failed: $ex")
+                    }finally{
+                        // Rename logs
+                        run_i("mv dmesg.log dmesg_" + board + ".log")
+                        run_i("mv dmesg_err.log dmesg_" + board + "_err.log")
+                        run_i("mv dmesg_warn.log dmesg_" + board + "_warn.log")
+                        archiveArtifacts artifacts: '*.log', followSymlinks: false, allowEmptyArchive: true
                     }
                 }
-        finally {
-                    // Rename logs
-                    run_i("mv dmesg.log dmesg_" + board + ".log")
-                    run_i("mv dmesg_err.log dmesg_" + board + "_err.log")
-                    run_i("mv dmesg_warn.log dmesg_" + board + "_warn.log")
-                    archiveArtifacts artifacts: '*.log', followSymlinks: false, allowEmptyArchive: true
-        }
-      };
+            };
             break
     case 'PyADITests':
             cls = { String board ->
-                try
-                {
                 stage('Run Python Tests') {
-                    //def ip = nebula('uart.get-ip')
-                    def ip = nebula('update-config network-config dutip --board-name='+board)
-                    println('IP: ' + ip)
-                    sh 'git clone -b "' + gauntEnv.pyadiBranch + '" https://github.com/analogdevicesinc/pyadi-iio.git'
-                    dir('pyadi-iio')
-            {
-                        run_i('pip3 install -r requirements.txt')
-                        run_i('pip3 install -r requirements_dev.txt')
-                        run_i('pip3 install pylibiio')
-                        run_i('mkdir testxml')
-                        board = board.replaceAll('-', '_')
-                        cmd = "python3 -m pytest --junitxml=testxml/" + board + "_reports.xml --adi-hw-map -v -k 'not stress' -s --uri='ip:"+ip+"' -m " + board
-                        def statusCode = sh script:cmd, returnStatus:true
-                        if ((statusCode != 5) && (statusCode != 0)){
-                            // Ignore error 5 which means no tests were run
-                            throw new NominalException('PyADITests Failed')
-                        }                
-            }
-                }
-                }
-                finally
-                {
-                    junit testResults: 'pyadi-iio/testxml/*.xml', allowEmptyResults: true                    
+                    try
+                    {
+                        //def ip = nebula('uart.get-ip')
+                        def ip = nebula('update-config network-config dutip --board-name='+board)
+                        println('IP: ' + ip)
+                        // temporarily get pytest-libiio from another source
+                        sh 'git clone -b "' + gauntEnv.pytest_libiio_branch + '" ' + gauntEnv.pytest_libiio_repo
+                        dir('pytest-libiio'){
+                            run_i('python3 setup.py install')
+                        }
+                        sh 'git clone -b "' + gauntEnv.pyadi_iio_branch + '" ' + gauntEnv.pyadi_iio_repo
+                        dir('pyadi-iio')
+                        {
+                            run_i('pip3 install -r requirements.txt')
+                            run_i('pip3 install -r requirements_dev.txt')
+                            run_i('pip3 install pylibiio')
+                            run_i('mkdir testxml')
+                            board = board.replaceAll('-', '_')
+                            cmd = "python3 -m pytest --junitxml=testxml/" + board + "_reports.xml --adi-hw-map -v -k 'not stress' -s --uri='ip:"+ip+"' -m " + board
+                            def statusCode = sh script:cmd, returnStatus:true
+                            if ((statusCode != 5) && (statusCode != 0)){
+                                // Ignore error 5 which means no tests were run
+                                throw new NominalException('PyADITests Failed')
+                            }                
+                        }
+                    }
+                    finally
+                    {
+                        junit testResults: 'pyadi-iio/testxml/*.xml', allowEmptyResults: true                    
+                    }
                 }
             }
             break
     case 'LibAD9361Tests':
             cls = { String board ->
                 def supported_boards = ['zynq-zed-adv7511-ad9361-fmcomms2-3',
+                                        'zynq-zc706-adv7511-ad9361-fmcomms5',
                                         'zynq-adrv9361-z7035-fmc',
+                                        'zynq-zed-adv7511-ad9364-fmcomms4',
                                         'pluto']
-                if(supported_boards.contains(board) && gauntEnv.libad9361Version != null){
+                if(supported_boards.contains(board) && gauntEnv.libad9361_iio_branch != null){
                     try{
                         stage("Test libad9361") {
                             def ip = nebula("update-config -s network-config -f dutip --board-name="+board)
-                            sh 'git clone -b '+ gauntEnv.libad9361Version + ' https://github.com/analogdevicesinc/libad9361-iio.git'
+                            sh 'git clone -b '+ gauntEnv.libad9361_iio_branch + ' ' + gauntEnv.libad9361_iio_repo
                             dir('libad9361-iio')
                             {
                                 sh 'mkdir build'
@@ -317,7 +388,7 @@ private def run_agents() {
                             sh 'mkdir -p /root/.config/pip && cp /default/pip.conf /root/.config/pip/pip.conf || true'
                             sh 'cp /default/pyadi_test.yaml /etc/default/pyadi_test.yaml || true'
                             sh 'cp -r /app/* "${PWD}"/'
-                            setupAgent(['libiio','nebula'], true, docker_status);
+                            setupAgent(['libiio','nebula','telemetry'], true, docker_status);
                             // Above cleans up so we need to move to a valid folder
                             sh 'cd /tmp'
                         }
@@ -381,6 +452,14 @@ def set_required_hardware(List board_names) {
 }
 
 /**
+ * Set elastic server address. Setting will use a non-default elastic search server
+ * @param elastic_server String of server IP
+ */
+def set_elastic_server(elastic_server) {
+    gauntEnv.elastic_server = elastic_server
+}
+
+/**
  * Set nebula debug mode. Setting true will add show-log to nebula commands
  * @param nebula_debug Boolean of debug mode
  */
@@ -394,14 +473,6 @@ def set_nebula_debug(nebula_debug) {
  */
 def set_nebula_local_fs_source_root(nebula_local_fs_source_root) {
     gauntEnv.nebula_local_fs_source_root = nebula_local_fs_source_root
-}
-
-/**
- * Set pyadi branch name to use for testing.
- * @param pyadi_branch String of branch name
- */
-def set_pyadi_branch(pyadi_branch) {
-    gauntEnv.pyadiBranch = pyadi_branch
 }
 
 /**
@@ -561,6 +632,46 @@ def nebula(cmd, full=false, show_log=false) {
             if (lines[i].contains('WARNING')) {
                 continue
             }
+            if (!lines[i].matches(/.*[A-Za-z0-9]+.*/)) {
+                continue
+            }
+            if (added > 0) {
+                out = out + '\n'
+            }
+            out = out + lines[i]
+            added = added + 1
+        }
+    }
+    return out
+}
+
+def sendLogsToElastic(... args) {
+    full = false
+    cmd = args.join(' ')
+    if (gauntEnv.elastic_server) {
+        cmd = ' --server=' + gauntEnv.elastic_server + ' ' + cmd
+    }
+    cmd = 'telemetry log-boot-logs ' + cmd
+    println(cmd)
+    if (checkOs() == 'Windows') {
+        script_out = bat(script: cmd, returnStdout: true).trim()
+    }
+    else {
+        script_out = sh(script: cmd, returnStdout: true).trim()
+    }
+    // Remove lines
+    out = ''
+    if (!full) {
+        lines = script_out.split('\n')
+        if (lines.size() == 1) {
+            return script_out
+        }
+        out = ''
+        added = 0
+        for (i = 1; i < lines.size(); i++) {
+            if (lines[i].contains('WARNING')) {
+                continue
+            }
             if (added > 0) {
                 out = out + '\n'
             }
@@ -573,11 +684,11 @@ def nebula(cmd, full=false, show_log=false) {
 
 private def clone_nebula() {
     if (checkOs() == 'Windows') {
-        bat 'git clone https://github.com/tfcollins/nebula.git'
+        bat 'git clone -b '+  gauntEnv.nebula_branch + ' ' + gauntEnv.nebula_repo
     }
     else {
         sh 'pip3 uninstall nebula -y || true'
-        sh 'git clone https://github.com/tfcollins/nebula.git'
+        sh 'git clone -b ' + gauntEnv.nebula_branch + ' ' + gauntEnv.nebula_repo
         sh 'cp -r nebula /usr/app'
     }
 }
@@ -601,10 +712,10 @@ private def install_nebula() {
 
 private def clone_libiio() {
     if (checkOs() == 'Windows') {
-        bat 'git clone https://github.com/analogdevicesinc/libiio.git'
+        bat 'git clone -b ' + gauntEnv.libiio_branch + ' ' + gauntEnv.libiio_repo
     }
     else {
-        sh 'git clone -b v0.19 https://github.com/analogdevicesinc/libiio.git'
+        sh 'git clone -b ' + gauntEnv.libiio_branch + ' ' + gauntEnv.libiio_repo
         sh 'cp -r libiio /usr/app'
     }
 }
@@ -638,6 +749,36 @@ private def install_libiio() {
     }
 }
 
+private def clone_telemetry(){
+    if (checkOs() == 'Windows') {
+        bat 'git clone -b ' + gauntEnv.telemetry_branch + ' ' + gauntEnv.telemetry_repo
+    }else{
+        // sh 'pip3 uninstall telemetry -y || true'
+        sh 'git clone -b ' + gauntEnv.telemetry_branch + ' ' + gauntEnv.telemetry_repo
+        sh 'cp -r telemetry /usr/app'
+    }
+}
+
+private def install_telemetry() {
+    if (checkOs() == 'Windows') {
+        // bat 'git clone https://github.com/tfcollins/telemetry.git'
+        dir('telemetry')
+        {
+            bat 'pip install -r requirements_dev.txt'
+            bat 'python setup.py install'
+        }
+    }
+    else {
+        sh 'pip3 uninstall telemetry -y || true'
+        // sh 'git clone https://github.com/tfcollins/telemetry.git'
+        dir('telemetry')
+        {
+            sh 'pip3 install -r requirements_dev.txt'
+            sh 'python3 setup.py install'
+        }
+    }
+}
+
 private def setupAgent(deps, skip_cleanup = false, docker_status) {
     try {
         def i;
@@ -657,6 +798,14 @@ private def setupAgent(deps, skip_cleanup = false, docker_status) {
                 } else {
                     clone_libiio()
                     install_libiio()
+                }
+            }
+            if (deps[i] == 'telemetry') {
+                if (docker_status) {
+                    install_telemetry()
+                } else {
+                    clone_telemetry()
+                    install_telemetry()
                 }
             }
         }
