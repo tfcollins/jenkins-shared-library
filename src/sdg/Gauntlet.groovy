@@ -631,6 +631,9 @@ def nebula(cmd, full=false, show_log=false) {
             if (lines[i].contains('WARNING')) {
                 continue
             }
+            if (!lines[i].matches(/.*[A-Za-z0-9]+.*/)) {
+                continue
+            }
             if (added > 0) {
                 out = out + '\n'
             }
