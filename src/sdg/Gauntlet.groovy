@@ -764,7 +764,6 @@ private def install_telemetry() {
         // bat 'git clone https://github.com/tfcollins/telemetry.git'
         dir('telemetry')
         {
-            bat 'pip install -r requirements_dev.txt'
             bat 'python setup.py install'
         }
     }
@@ -773,7 +772,6 @@ private def install_telemetry() {
         // sh 'git clone https://github.com/tfcollins/telemetry.git'
         dir('telemetry')
         {
-            sh 'pip3 install -r requirements_dev.txt'
             sh 'python3 setup.py install'
         }
     }
