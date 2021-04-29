@@ -10,15 +10,18 @@ gauntEnv
  * @param dependencies - List of strings which are names of dependencies
  * @param hdlBranch - String of name of hdl branch to use for bootfile source
  * @param linuxBranch - String of name of linux branch to use for bootfile source
+ * @param bootPartitionBranch - String of name of boot partition branch to use for bootfile source, set to 'NA' if hdl and linux is to be used
  * @param firmwareVersion - String of name of firmware version branch to use for pluto and m2k
  * @param bootfile_source - String location of bootfiles. Options: sftp, artifactory, http, local
  * @return constructed object
  */
-def construct(List dependencies, hdlBranch, linuxBranch, firmwareVersion, bootfile_source) {
+def construct(List dependencies, hdlBranch, linuxBranch, bootPartitionBranch, firmwareVersion, bootfile_source) {
     gauntEnv = [
             dependencies: dependencies,
             hdlBranch: hdlBranch,
             linuxBranch: linuxBranch,
+            bootPartitionBranch: bootPartitionBranch,
+            branches: ( bootPartitionBranch == 'NA')? [linuxBranch, hdlBranch]: ['boot_partition', bootPartitionBranch],
             firmwareVersion: firmwareVersion,
             bootfile_source: bootfile_source,
             agents_online: '',
@@ -146,11 +149,12 @@ def stage_library(String stage_name) {
                 try {
                 stage('Update BOOT Files') {
                     println("Board name passed: "+board)
+                    println(gauntEnv.branches.toString())
                     if (board=="pluto")
                         nebula('dl.bootfiles --board-name=' + board + ' --branch=' + gauntEnv.firmwareVersion)
                     else
                         nebula('dl.bootfiles --board-name=' + board + ' --source-root="' + gauntEnv.nebula_local_fs_source_root + '" --source=' + gauntEnv.bootfile_source
-                                + ' --branch=' + gauntEnv.linuxBranch)
+                                +  ' --branch="' + gauntEnv.branches.toString() + '"')
                     nebula('manager.update-boot-files --board-name=' + board + ' --folder=outs', full=false, show_log=true)
                     if (board=="pluto")
                         nebula('uart.set-local-nic-ip-from-usbdev --board-name=' + board)
@@ -221,9 +225,9 @@ def stage_library(String stage_name) {
                         throw new NominalException("Linux Test Failed: $ex")
                     }finally{
                         // Rename logs
-                        run_i("mv dmesg.log dmesg_" + board + ".log")
-                        run_i("mv dmesg_err.log dmesg_" + board + "_err.log")
-                        run_i("mv dmesg_warn.log dmesg_" + board + "_warn.log")
+                        run_i("if [ -f dmesg.log ]; then mv dmesg.log dmesg_" + board + ".log; fi")
+                        run_i("if [ -f dmesg_err.log ]; then mv dmesg_err.log dmesg_" + board + "_err.log; fi")
+                        run_i("if [ -f dmesg_warn.log ]; then mv dmesg_warn.log dmesg_" + board + "_warn.log; fi")
                         archiveArtifacts artifacts: '*.log', followSymlinks: false, allowEmptyArchive: true
                     }
                 }
@@ -357,6 +361,7 @@ private def run_agents() {
     docker_args.add('-v /etc/default:/default:ro')
     docker_args.add('-v /dev:/dev')
     docker_args.add('-v /usr/app:/app')
+    docker_args.add('--network host')
     if (docker_args instanceof List) {
         docker_args = docker_args.join(' ')
     }
