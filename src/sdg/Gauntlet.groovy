@@ -151,7 +151,7 @@ def stage_library(String stage_name) {
                     println("Board name passed: "+board)
                     println(gauntEnv.branches.toString())
                     if (board=="pluto")
-                        nebula('dl.bootfiles --board-name=' + board + ' --branch=' + gauntEnv.firmwareVersion)
+                        nebula('dl.bootfiles --board-name=' + board + ' --branch=' + gauntEnv.firmwareVersion + ' --firmware')
                     else
                         nebula('dl.bootfiles --board-name=' + board + ' --source-root="' + gauntEnv.nebula_local_fs_source_root + '" --source=' + gauntEnv.bootfile_source
                                 +  ' --branch="' + gauntEnv.branches.toString() + '"')
