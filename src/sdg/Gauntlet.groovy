@@ -34,6 +34,7 @@ def construct(List dependencies, hdlBranch, linuxBranch, bootPartitionBranch, fi
             enable_docker: false,
             docker_image: 'tfcollins/sw-ci:latest',
             docker_args: ['MATLAB','Vivado'],
+            docker_host_mode: true,
             enable_update_boot_pre_docker: false,
             setup_called: false,
             nebula_debug: false,
@@ -361,7 +362,9 @@ private def run_agents() {
     docker_args.add('-v /etc/default:/default:ro')
     docker_args.add('-v /dev:/dev')
     docker_args.add('-v /usr/app:/app')
-    docker_args.add('--network host')
+    if (gauntEnv.docker_host_mode) {
+        docker_args.add('--network host')
+    }
     if (docker_args instanceof List) {
         docker_args = docker_args.join(' ')
     }
