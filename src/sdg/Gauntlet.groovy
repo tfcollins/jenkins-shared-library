@@ -500,6 +500,14 @@ def set_enable_docker(enable_docker) {
 }
 
 /**
+ * Enable use of docker host mode.
+ * @param docker_host_mode boolean True will enable use of docker host mode
+ */
+def set_docker_host_mode(docker_host_mode) {
+    gauntEnv.docker_host_mode = docker_host_mode
+}
+
+/**
  * Enable update boot to be run before docker is launched.
  * @param set_enable_update_boot_pre_docker boolean True will run update boot stage before docker is launch
  */
