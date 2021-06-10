@@ -336,9 +336,9 @@ def stage_library(String stage_name) {
                     println(gauntEnv.elastic_logs)
                     echo 'Starting send log to elastic search'
                     cmd = 'boot_folder_name ' + board
-                    cmd += ' hdl_hash ' + gauntEnv.hdl_hash
-                    cmd += ' linux_hash ' + gauntEnv.linux_hash
-                    cmd += ' boot_partition_hash ' + gauntEnv.boot_partition_hash
+                    cmd += ' hdl_hash ' + '\'' + gauntEnv.hdl_hash + '\''
+                    cmd += ' linux_hash ' +  '\'' + gauntEnv.linux_hash + '\''
+                    cmd += ' boot_partition_hash ' + '\'' + gauntEnv.boot_partition_hash + '\''
                     cmd += ' hdl_branch ' + gauntEnv.hdlBranch
                     cmd += ' linux_branch ' + gauntEnv.linuxBranch
                     cmd += ' boot_partition_branch ' + gauntEnv.bootPartitionBranch
