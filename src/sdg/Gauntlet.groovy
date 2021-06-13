@@ -462,6 +462,14 @@ def set_required_hardware(List board_names) {
 }
 
 /**
+ * Set nebula branch to use. Setting will be used globally for anytime nebula is installed
+ * @param nebula_branch String of nebula github branch
+ */
+def set_nebula_branch(nebula_branch) {
+    gauntEnv.nebula_branch = nebula_branch
+}
+
+/**
  * Set elastic server address. Setting will use a non-default elastic search server
  * @param elastic_server String of server IP
  */
