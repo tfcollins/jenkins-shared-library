@@ -201,7 +201,7 @@ def stage_library(String stage_name) {
                     set_elastic_field(board, 'post_boot_failure', 'False')
                 }}
                 catch(Exception ex) {
-                    echo "UpdateBOOTFiles exception ${ex}"
+                    echo getStackTrace(ex)
                     if (ex.getMessage().contains('u-boot not reached')){
                         set_elastic_field(board, 'uboot_reached', 'False')
                         set_elastic_field(board, 'kernel_started', 'False')
@@ -262,6 +262,7 @@ def stage_library(String stage_name) {
                             echo "Executing board recovery..."
                             nebula('manager.recovery-device-manager --board-name=' + board + ' --folder=outs' + ' --sdcard')
                         }catch(Exception ex){
+                            echo getStackTrace(ex)
                             throw ex
                         }finally{
                             //archive uart logs
@@ -304,6 +305,7 @@ def stage_library(String stage_name) {
                             echo "${uart_ip} is same with config ip ${dutip}"
                         }
                     }catch(Exception ex){
+                        echo getStackTrace(ex)
                         dutip = ''
                         uart_ip = ''
                         throw ex
@@ -391,6 +393,7 @@ def stage_library(String stage_name) {
                             throw new Exception("failed_test")
                         }
                     }catch(Exception ex) {
+                        echo getStackTrace(ex)
                         throw new NominalException("Linux Test Failed: $ex")
                     }finally{
                         // count dmesg errs and warns
@@ -1109,4 +1112,12 @@ private def run_i(cmd) {
     else {
         sh cmd
     }
+}
+
+private def String getStackTrace(Throwable aThrowable){
+    // Utility method to print the stack trace of an error
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    PrintStream ps = new PrintStream(baos, true);
+    aThrowable.printStackTrace(ps);
+    return baos.toString();
 }
