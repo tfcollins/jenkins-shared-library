@@ -259,7 +259,7 @@ def stage_library(String stage_name) {
                             board = board.replaceAll('-', '_')
                             //cmd = "python3 -m pytest --junitxml=testxml/" + board + "_reports.xml --adi-hw-map -v -k 'not stress' -s --uri='ip:"+ip+"' -m " + board
                             cmd = "python3 -m pytest --html=testhtml/report.html --junitxml=testxml/" + board + "_reports.xml --adi-hw-map -v -k 'not stress' -s --uri='serial:"+serial+",921600' -m " + board
-                            publishHTML (target : [allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'reports', reportFiles: 'report.html', reportName: board, reportTitles: board])
+                            publishHTML(target : [allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'testhtml', reportFiles: 'report.html', reportName: board, reportTitles: board])
                             def statusCode = sh script:cmd, returnStatus:true
                             if ((statusCode != 5) && (statusCode != 0)){
                                 // Ignore error 5 which means no tests were run
