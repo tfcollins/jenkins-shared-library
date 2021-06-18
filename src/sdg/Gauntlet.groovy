@@ -260,7 +260,7 @@ def stage_library(String stage_name) {
                             //cmd = "python3 -m pytest --junitxml=testxml/" + board + "_reports.xml --adi-hw-map -v -k 'not stress' -s --uri='ip:"+ip+"' -m " + board
                             cmd = "python3 -m pytest --capture=tee-sys --html=testhtml/report.html --junitxml=testxml/" + board + "_reports.xml --adi-hw-map -v -k 'not stress' -s --uri='serial:"+serial+",921600' -m " + board
                             def statusCode = sh script:cmd, returnStatus:true
-                            publishHTML(target : [escapeUnderscores: true, allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'testhtml', reportFiles: 'report.html', reportName: board, reportTitles: board])
+                            publishHTML(target : [escapeUnderscores: true, allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: 'testhtml', reportFiles: 'report.html', reportName: board, reportTitles: board])
                             if ((statusCode != 5) && (statusCode != 0)){
                                 // Ignore error 5 which means no tests were run
                                 throw new NominalException('PyADITests Failed')
