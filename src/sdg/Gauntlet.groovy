@@ -254,9 +254,11 @@ def stage_library(String stage_name) {
                             run_i('pip3 install -r requirements_dev.txt')
                             run_i('pip3 install pylibiio')
                             run_i('mkdir testxml')
+                            run_i('mkdir testhtml')
                             board = board.replaceAll('-', '_')
-                            cmd = "python3 -m pytest --junitxml=testxml/" + board + "_reports.xml --adi-hw-map -v -k 'not stress' -s --uri='ip:"+ip+"' -m " + board
+                            cmd = "python3 -m pytest --html=testhtml/report.html --junitxml=testxml/" + board + "_reports.xml --adi-hw-map -v -k 'not stress' -s --uri='ip:"+ip+"' -m " + board + " --capture=tee-sys"
                             def statusCode = sh script:cmd, returnStatus:true
+                            publishHTML(target : [escapeUnderscores: false, allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: 'testhtml', reportFiles: 'report.html', reportName: board, reportTitles: board])
                             if ((statusCode != 5) && (statusCode != 0)){
                                 // Ignore error 5 which means no tests were run
                                 throw new NominalException('PyADITests Failed')
