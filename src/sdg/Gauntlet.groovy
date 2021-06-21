@@ -87,7 +87,7 @@ def set_env(String param, def value) {
 /* *
  * Getter method for elastic_logs fields
  */
-def get_elastic_field(String board, String field, String default_value="") {
+def synchronized get_elastic_field(String board, String field, String default_value="") {
     def value = default_value
     if (gauntEnv.elastic_logs.containsKey(board)){
         if(gauntEnv.elastic_logs[board].containsKey(field)){
@@ -100,7 +100,7 @@ def get_elastic_field(String board, String field, String default_value="") {
 /* *
  * Setter method for elastic_logs fields
  */
-def set_elastic_field(String board, String field, String value) {
+def synchronized set_elastic_field(String board, String field, String value) {
     def field_map = [:]
     field_map[field] = value
     if (gauntEnv.elastic_logs.containsKey(board)){
