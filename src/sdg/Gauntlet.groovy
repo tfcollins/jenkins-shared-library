@@ -31,6 +31,7 @@ def construct(List dependencies, hdlBranch, linuxBranch, bootPartitionBranch, fi
             agents: [],
             boards: [],
             required_hardware: [],
+            firmware_boards: ['pluto','m2k'],
             enable_docker: false,
             docker_image: 'tfcollins/sw-ci:latest',
             docker_args: ['MATLAB','Vivado'],
@@ -55,9 +56,6 @@ def construct(List dependencies, hdlBranch, linuxBranch, bootPartitionBranch, fi
             libiio_branch: 'master',
             telemetry_repo: 'https://github.com/tfcollins/telemetry.git',
             telemetry_branch: 'master',
-            hdl_hash: "NA",
-            linux_hash: "NA",
-            boot_partition_hash: "NA",
             send_results: false,
             elastic_logs : [:]
     ]
@@ -190,7 +188,7 @@ def stage_library(String stage_name) {
                         nebula('dl.bootfiles --board-name=' + board + ' --source-root="' + gauntEnv.nebula_local_fs_source_root + '" --source=' + gauntEnv.bootfile_source
                                 +  ' --branch="' + gauntEnv.branches.toString() + '"', true, true, true)
                     //get git sha properties of files
-                    get_gitsha()
+                    get_gitsha(board)
                     //update-boot-files
                     nebula('manager.update-boot-files --board-name=' + board + ' --folder=outs', true, true, true)
                     if (board=="pluto")
@@ -223,7 +221,7 @@ def stage_library(String stage_name) {
                     }else{
                         echo "Update BOOT Files unexpectedly failed. ${ex.getMessage()}"
                     }
-                    get_gitsha()
+                    get_gitsha(board)
                     // send logs to elastic
                     if (gauntEnv.send_results){
                         set_elastic_field(board, 'last_failing_stage', 'UpdateBOOTFiles')
@@ -338,8 +336,8 @@ def stage_library(String stage_name) {
                     println(gauntEnv.elastic_logs)
                     echo 'Starting send log to elastic search'
                     cmd = 'boot_folder_name ' + board
-                    cmd += ' hdl_hash ' + '\'' + gauntEnv.hdl_hash + '\''
-                    cmd += ' linux_hash ' +  '\'' + gauntEnv.linux_hash + '\''
+                    cmd += ' hdl_hash ' + '\'' + get_elastic_field(board, 'hdl_hash' , 'NA') + '\''
+                    cmd += ' linux_hash ' +  '\'' + get_elastic_field(board, 'linux_hash' , 'NA') + '\''
                     cmd += ' boot_partition_hash ' + '\'' + gauntEnv.boot_partition_hash + '\''
                     cmd += ' hdl_branch ' + gauntEnv.hdlBranch
                     cmd += ' linux_branch ' + gauntEnv.linuxBranch
@@ -1092,16 +1090,26 @@ private def setupAgent(deps, skip_cleanup = false, docker_status) {
     }
 }
 
-private def get_gitsha(){
+private def get_gitsha(String board){
     dir ('outs'){
         script{ properties = readYaml file: 'properties.yaml' }
     }
+    if (gauntEnv.firmware_boards.contains(board)){
+        set_elastic_field(board, 'hdl_hash', 'NA')
+        set_elastic_field(board, 'linux_hash', 'NA')
+        return
+    }
+
     if (gauntEnv.bootPartitionBranch == 'NA'){
-        gauntEnv.hdl_hash = properties.hdl_git_sha + " (" + properties.hdl_folder + ")"
-        gauntEnv.linux_hash = properties.linux_git_sha + " (" + properties.linux_folder + ")"
+        hdl_hash = properties.hdl_git_sha + " (" + properties.hdl_folder + ")"
+        linux_hash = properties.linux_git_sha + " (" + properties.linux_folder + ")"
+        set_elastic_field(board, 'hdl_hash', hdl_hash)
+        set_elastic_field(board, 'linux_hash', linux_hash)
     }else{
-        gauntEnv.hdl_hash = properties.hdl_git_sha + " (" + properties.bootpartition_folder + ")"
-        gauntEnv.linux_hash = properties.linux_git_sha + " (" + properties.bootpartition_folder + ")"
+        hdl_hash = properties.hdl_git_sha + " (" + properties.bootpartition_folder + ")"
+        linux_hash = properties.linux_git_sha + " (" + properties.bootpartition_folder + ")"
+        set_elastic_field(board, 'hdl_hash', hdl_hash)
+        set_elastic_field(board, 'linux_hash', linux_hash)
     }
 }
 
