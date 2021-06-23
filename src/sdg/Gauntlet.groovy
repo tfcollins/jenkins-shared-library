@@ -481,7 +481,7 @@ def set_iio_uri_source(iio_uri_source) {
  * Set URI serial baudrate. Set URI baudrate. Only applicable when iio_uri_source is serial
  * @param iio_uri_source Integer of URI baudrate
  */
-def set_elastic_server(iio_uri_baudrate) {
+def set_iio_uri_baudrate(iio_uri_baudrate) {
     gauntEnv.iio_uri_baudrate = iio_uri_baudrate
 }
 
