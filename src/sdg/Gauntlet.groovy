@@ -40,6 +40,8 @@ def construct(List dependencies, hdlBranch, linuxBranch, bootPartitionBranch, fi
             nebula_debug: false,
             nebula_local_fs_source_root: '/var/lib/tftpboot',
             elastic_server: '',
+            iio_uri_source: 'ip',
+            iio_uri_baudrate: 921600,
             configure_called: false,
             pytest_libiio_repo: 'https://github.com/tfcollins/pytest-libiio.git',
             pytest_libiio_branch: 'master',
@@ -241,6 +243,8 @@ def stage_library(String stage_name) {
                     {
                         //def ip = nebula('uart.get-ip')
                         def ip = nebula('update-config network-config dutip --board-name='+board)
+                        def serial = nebula('update-config uart-config address --board-name='+board)
+                        def uri;
                         println('IP: ' + ip)
                         // temporarily get pytest-libiio from another source
                         sh 'git clone -b "' + gauntEnv.pytest_libiio_branch + '" ' + gauntEnv.pytest_libiio_repo
@@ -256,7 +260,11 @@ def stage_library(String stage_name) {
                             run_i('mkdir testxml')
                             run_i('mkdir testhtml')
                             board = board.replaceAll('-', '_')
-                            cmd = "python3 -m pytest --html=testhtml/report.html --junitxml=testxml/" + board + "_reports.xml --adi-hw-map -v -k 'not stress' -s --uri='ip:"+ip+"' -m " + board + " --capture=tee-sys"
+                            if (gauntEnv.iio_uri_source == "ip")
+                                uri = "ip:" + ip;
+                            else
+                                uri = "serial:" + serial + "," + gauntEnv.iio_uri_baudrate.toString()
+                            cmd = "python3 -m pytest --html=testhtml/report.html --junitxml=testxml/" + board + "_reports.xml --adi-hw-map -v -k 'not stress' -s --uri='"+uri+"' -m " + board + " --capture=tee-sys"
                             def statusCode = sh script:cmd, returnStatus:true
                             publishHTML(target : [escapeUnderscores: false, allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: 'testhtml', reportFiles: 'report.html', reportName: board, reportTitles: board])
                             if ((statusCode != 5) && (statusCode != 0)){
@@ -459,6 +467,22 @@ jobs[agent+"-"+board] = {
 def set_required_hardware(List board_names) {
     assert board_names instanceof java.util.List
     gauntEnv.required_hardware = board_names
+}
+
+/**
+ * Set URI source. Set URI source. Supported are ip or serial
+ * @param iio_uri_source String of URI source
+ */
+def set_iio_uri_source(iio_uri_source) {
+    gauntEnv.iio_uri_source = iio_uri_source
+}
+
+/**
+ * Set URI serial baudrate. Set URI baudrate. Only applicable when iio_uri_source is serial
+ * @param iio_uri_source Integer of URI baudrate
+ */
+def set_elastic_server(iio_uri_baudrate) {
+    gauntEnv.iio_uri_baudrate = iio_uri_baudrate
 }
 
 /**
