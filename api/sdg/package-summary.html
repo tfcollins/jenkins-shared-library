@@ -96,10 +96,12 @@ function windowTitle()
                             </td>
                             <td>Decorator class to wrap stage closures to ensure graceful failure
  if stage is a requisite (i.e build status is FAILURE), 
- use 'true' in second param
+  use 'true' in second param
       ex. def newCls = new FailSafe(oldCls, true)
- if stage is not a requisite (i.e build status is UNSTABLEs), 
- use 'false' in second param
+  before exiting, nextDelegate wil be executed if supplied
+      ex. def newCls = new FailSafe(oldCls, true, backupCls)
+ if stage is not a requisite (i.e build status is UNSTABLE), 
+  use 'false' in second param
       ex. def newCls = new FailSafe(oldCls, false)</td>
                         </tr>
 <tr class="altColor">
