@@ -317,8 +317,9 @@ def stage_library(String stage_name) {
             break
         case 'NoOS':
             cls = { String board ->
-                stage('No OS') {
+                stage('Build and Test No OS') {
                     def noos_folder = nebula('update-config noos-config noos_folder --board-name='+board)
+                    def baudrate = nebula('update-config uart-config baudrate --board-name='+board)
                     //download HDF/XSA file
                     nebula('dl.noosfiles --board-name=' + board + ' --source-root="' + gauntEnv.nebula_local_fs_source_root + '" --source=' + gauntEnv.bootfile_source
                             +  ' --branch="' + gauntEnv.branches.toString() + '"')
@@ -327,15 +328,29 @@ def stage_library(String stage_name) {
                         sleep(2);
                         sh 'git clone --recursive -b master https://github.com/analogdevicesinc/no-OS.git'
                     }
-                    sh 'cp outs/system_top.xsa no-OS/projects/'+ noos_folder +'/'
+                    def file = new File('outs/system_top.hdf')
+                    if (file.exists) {
+                        def noos_file = 'outs/system_top.hdf'
+                        def vivado_ver = '/opt/Xilinx/Vivado/2019.1/settings64.sh'
+                    }else{
+                        def noos_file = 'outs/system_top.xsa'
+                        def vivado_ver = '/opt/Xilinx/Vivado/2020.1/settings64.sh'
+                    }
+                    sh 'cp ' +noos_file+ ' no-OS/projects/'+ noos_folder +'/'
                     dir('no-OS')
                     {
                         dir('projects/'+ noos_folder)
                         {
-                            sh '. /opt/Xilinx/Vivado/2019.1/settings64.sh && make HARDWARE=system_top.xsa TINYIIOD=y'
+                            sh '. '+vivado_ver+ ' && make HARDWARE=' +noos_file+ ' TINYIIOD=y'
                             retry(3){
                                 sleep(5);
-                                sh '. /opt/Xilinx/Vivado/2019.1/settings64.sh && make run'
+                                sh '. '+vivado_ver+ ' && make run'
+                            }
+                            retry(3) {
+                                echo '---------------------------'
+                                sleep(10);
+                                echo "Check context"
+                                sh 'iio_info -u serial:/dev/ttyUSB1,'+baudrate
                             }
                         }
                     }  
