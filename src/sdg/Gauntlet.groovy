@@ -315,6 +315,33 @@ def stage_library(String stage_name) {
                 }
             }
             break
+        case 'NoOS':
+            cls = { String board ->
+                stage('No OS') {
+                    def noos_folder = nebula('update-config noos-config noos_folder --board-name='+board)
+                    //download HDF/XSA file
+                    nebula('dl.noosfiles --board-name=' + board + ' --source-root="' + gauntEnv.nebula_local_fs_source_root + '" --source=' + gauntEnv.bootfile_source
+                            +  ' --branch="' + gauntEnv.branches.toString() + '"')
+                    // Clone, build and test no-OS
+                    retry(3) {
+                        sleep(2);
+                        sh 'git clone --recursive -b master https://github.com/analogdevicesinc/no-OS.git'
+                    }
+                    sh 'cp outs/system_top.xsa no-OS/projects/'+ noos_folder +'/'
+                    dir('no-OS')
+                    {
+                        dir('projects/'+ noos_folder)
+                        {
+                            sh '. /opt/Xilinx/Vivado/2019.1/settings64.sh && make HARDWARE=system_top.xsa TINYIIOD=y'
+                            retry(3){
+                                sleep(5);
+                                sh '. /opt/Xilinx/Vivado/2019.1/settings64.sh && make run'
+                            }
+                        }
+                    }  
+                }
+            }
+            break
     default:
         throw new Exception('Unknown library stage: ' + stage_name)
     }
