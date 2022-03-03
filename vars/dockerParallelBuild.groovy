@@ -36,7 +36,14 @@ def call(branchNames, dockerHost, dockerArgs, dockerstages) {
     }
 
     for ( i = 0; i < branchNames.size(); i++ ) {
-        def branchName = branchNames[i]
+        def bn = branchNames[i]
+        
+        if  (bn.class == String){
+            def branchName = bn;
+        }
+        else {
+            def branchName = bn.join('_')
+        }
 
         tests[branchName] = {
             node (label: dockerHost) {
@@ -44,7 +51,7 @@ def call(branchNames, dockerHost, dockerArgs, dockerstages) {
                     docker.image('tfcollins/hdl-ci:latest').inside(dockerArgs) {
                         sh 'chmod +x /usr/local/bin/docker-entrypoint.sh'
                         sh '/usr/local/bin/docker-entrypoint.sh'
-                        dockerstages(branchName)
+                        dockerstages(bn)
                     }
                     cleanWs()
                 }
