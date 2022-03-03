@@ -42,8 +42,8 @@ def call(branchNames, dockerHost, dockerArgs, dockerstages) {
             node (label: dockerHost) {
                 stage (branchName) {
                     docker.image('tfcollins/libiio_ubuntu_20_04-ci:latest').inside(dockerArgs) {
-                        sh 'chmod +x /usr/local/bin/docker-entrypoint.sh'
-                        sh '/usr/local/bin/docker-entrypoint.sh'
+                        //sh 'chmod +x /usr/local/bin/docker-entrypoint.sh'
+                        //sh '/usr/local/bin/docker-entrypoint.sh'
                         dockerstages(branchName)
                     }
                     cleanWs()
