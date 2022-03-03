@@ -37,12 +37,12 @@ def call(branchNames, dockerHost, dockerArgs, dockerstages) {
 
     for ( i = 0; i < branchNames.size(); i++ ) {
         def bn = branchNames[i]
-        
+        def branchName = '';
         if  (bn.class == String){
-            def branchName = bn;
+            branchName = bn;
         }
         else {
-            def branchName = bn.join('_')
+            branchName = bn.join('_')
         }
 
         tests[branchName] = {
