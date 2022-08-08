@@ -48,9 +48,10 @@ def call(branchNames, dockerHost, dockerArgs, dockerstages) {
         tests[branchName] = {
             node (label: dockerHost) {
                 stage (branchName) {
-                    docker.image('tfcollins/hdl-ci:latest').inside(dockerArgs) {
-                        sh 'chmod +x /usr/local/bin/docker-entrypoint.sh'
-                        sh '/usr/local/bin/docker-entrypoint.sh'
+                    docker.image('tfcollins/libiio_ubuntu_20_04-ci:latest').inside(dockerArgs) {
+                        //sh 'chmod +x /usr/local/bin/docker-entrypoint.sh'
+                        //sh '/usr/local/bin/docker-entrypoint.sh'
+                        sh 'cp -r /root/.matlabro /root/.matlab'
                         dockerstages(bn)
                     }
                     cleanWs()
