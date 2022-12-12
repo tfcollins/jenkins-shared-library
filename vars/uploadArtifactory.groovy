@@ -89,6 +89,27 @@ def call(project, filepattern) {
             target = target + 'dev/' + branch
     }
   }
+  else if (project == 'PrecisionToolbox') {
+        ext = '.mltbx'
+        name = 'pc-toolbox'
+        target = root + 'PrecisionToolbox/'
+
+        def branch = env.BRANCH_NAME
+        if (!env.BRANCH_NAME) {
+            println('Branch name not found in environment, checking through git')
+            sh 'git branch > branchname'
+            sh 'sed -i "s/[*]//" branchname'
+            branch = readFile('branchname').trim()
+        }
+
+        println('Found branch: ' + branch)
+        if (branch == 'main') {
+            target = target + 'main'
+        }
+    else {
+            target = target + 'dev/' + branch
+    }
+  }
   else {
         println('Unknown project. Not uploading artifacts')
         return
