@@ -1,4 +1,23 @@
-def call(String toolbox, String branch, String build) {
+def call(String toolbox) {
+  
+    def branch = env.BRANCH_NAME
+    if (!env.BRANCH_NAME) {
+        println('Branch name not found in environment, checking through git')
+        sh 'git branch > branchname'
+        sh 'sed -i "s/[*]//" branchname'
+        branch = readFile('branchname').trim()
+    }
+    println('Found branch: ' + branch)
+  
+    def commit = env.GIT_COMMIT
+    if (!env.GIT_COMMIT) {
+        println('Git commit hash not found in environment, checking through git')
+        sh 'git rev-parse --short HEAD > commit'
+        commit = readFile('commit').trim()
+    }
+    println('Found git hash: ' + commit)
+  
+    build = env.BUILD_ID + '-' + commit
   
     cmd = 'curl -l -u "tcollins":"'
     withCredentials([string(credentialsId: 'JENKINS_HW_SERVER_TOKEN', variable: 'JENKINS_HW_SERVER_TOKEN')]) {
