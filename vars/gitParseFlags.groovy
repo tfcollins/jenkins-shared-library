@@ -1,13 +1,17 @@
-def call() {
+def call(cmessage = null) {
 
     def message = '';
-    node('master') {
-        checkout scm
-        message = sh (script: 'git log -1 --pretty=%B', returnStdout: true).trim()
-        echo 'GIT_COMMIT_MESSAGE: '+message
-        cleanWs();
+    if (cmessage == null) {
+        node('master') {
+            checkout scm
+            message = sh (script: 'git log -1 --pretty=%B', returnStdout: true).trim()
+            echo 'GIT_COMMIT_MESSAGE: '+message
+            cleanWs();
+        }
+    } else {
+        message = cmessage
     }
-
+    
     // Parse message for keys and values following CI: marker
     def operations = [];
     def lines = message.split('\n')
