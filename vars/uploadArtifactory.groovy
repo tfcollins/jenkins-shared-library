@@ -151,7 +151,7 @@ def call(project, filepattern) {
     // Check if we have files to upload based on target
     try {
         if (checkOs() == 'Windows') {
-            bat 'for %A in (' + filepattern + ') do @echo %A > files_searched'
+            bat "for %A in (' + filepattern + ') do @echo %A > files_searched"
         }
         else {
             sh 'ls ' + filepattern + ' > files_searched || true'
@@ -169,7 +169,11 @@ def call(project, filepattern) {
     def commit = env.GIT_COMMIT
     if (!env.GIT_COMMIT) {
         println('Git commit hash not found in environment, checking through git')
-        sh 'git rev-parse --short HEAD > commit'
+        if (checkOs() == 'Windows') {
+            bat 'git rev-parse --short HEAD > commit'
+        } else {
+            sh 'git rev-parse --short HEAD > commit'
+        }
         commit = readFile('commit').trim()
     }
     println('Found git hash: ' + commit)
