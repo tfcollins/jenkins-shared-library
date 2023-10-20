@@ -149,11 +149,20 @@ def call(project, filepattern) {
   //  TransceiverToolbox/release/trx-toolbox-tag/<files>
 
     // Check if we have files to upload based on target
-    sh 'ls ' + filepattern + ' > files_searched || true'
-    def files_list = readFile('files_searched')
-    println('Files found: ' + files_list)
-    if (files_list.length() <= 0) {
-        return
+    try {
+        if (checkOs() == 'Windows') {
+            bat 'for %A in (' + filepattern + ') do @echo %A > files_searched'
+        }
+        else {
+            sh 'ls ' + filepattern + ' > files_searched || true'
+        }
+        def files_list = readFile('files_searched')
+        println('Files found: ' + files_list)
+        if (files_list.length() <= 0) {
+            return
+        }
+    } catch(Exception ex) {
+        println(ex);
     }
 
     echo '-------Artifactory Git Hash lookup-------'
@@ -219,3 +228,20 @@ def shellout(command) {
 
     return val
 }
+
+def checkOs() {
+    if (isUnix()) {
+        def uname = sh script: 'uname', returnStdout: true
+        if (uname.startsWith('Darwin')) {
+            return 'Macos'
+        }
+        // Optionally add 'else if' for other Unix OS
+        else {
+            return 'Linux'
+        }
+    }
+    else {
+        return 'Windows'
+    }
+}
+
