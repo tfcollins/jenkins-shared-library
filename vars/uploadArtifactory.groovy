@@ -179,6 +179,12 @@ def call(project, filepattern) {
     println('Found git hash: ' + commit)
 
     // Build folder/filename
+    println("Target")
+    println(target)
+    println("BUILD_ID")
+    println(env.BUILD_ID)
+    println("commit")
+    println(commit)
     target = target + '/' + env.BUILD_ID + '-' + commit + '/'
 
     def uploadSpec = """{
