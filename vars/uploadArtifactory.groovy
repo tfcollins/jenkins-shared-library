@@ -2,6 +2,7 @@ def call(project, filepattern) {
     root = 'sdg-generic-development/'
     ext = ''
     name = 'unnamed'
+    def target;
     if (project == 'hdl') {
         target = root + 'hdl'
     }
