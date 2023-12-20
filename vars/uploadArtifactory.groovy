@@ -131,6 +131,7 @@ def call(project, filepattern) {
     else {
             target = target + 'dev/' + branch
     }
+    target = target + '/' + env.API
   }
   else {
         println('Unknown project. Not uploading artifacts')
