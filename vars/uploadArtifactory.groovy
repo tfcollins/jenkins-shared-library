@@ -131,7 +131,6 @@ def call(project, filepattern) {
     else {
             target = target + 'dev/' + branch
     }
-    target = target + '/' + env.API
   }
   else {
         println('Unknown project. Not uploading artifacts')
@@ -188,6 +187,9 @@ def call(project, filepattern) {
     println("commit")
     println(commit)
     target = target + '/' + env.BUILD_ID + '-' + commit + '/'
+    if (project == 'NavassaProfileGen') {
+        target = target + env.API + '/'
+    }
 
     def uploadSpec = """{
     "files": [
