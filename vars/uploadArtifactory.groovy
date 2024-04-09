@@ -1,4 +1,4 @@
-def call(project, filepattern) {
+def call(project, filepattern, subproject='') {
     root = 'sdg-generic-development/'
     ext = ''
     name = 'unnamed'
@@ -131,6 +131,27 @@ def call(project, filepattern) {
     else {
             target = target + 'dev/' + branch
     }
+  }
+  else if (project == 'ADSY1100') {
+        ext = '.mltbx'
+        name = 'adsy1100'
+        target = root + 'adsy1100/' + subproject + '/'
+
+        def branch = env.BRANCH_NAME
+        if (!env.BRANCH_NAME) {
+            println('Branch name not found in environment, checking through git')
+            sh 'git branch > branchname'
+            sh 'sed -i "s/[*]//" branchname'
+            branch = readFile('branchname').trim()
+        }
+
+        println('Found branch: ' + branch)
+        if (branch == 'master') {
+            target = target + 'master'
+        }
+        else {
+                target = target + 'dev/' + branch
+        }
   }
   else {
         println('Unknown project. Not uploading artifacts')
