@@ -30,10 +30,10 @@ def call(java.util.ArrayList listOfResources, matlabHSPro=true, UseNFS=false) {
         }
         else if (listOfResources[i].equalsIgnoreCase( 'Vivado' )) {
             echo '----Adding Vivado Resources----'
-            // if (UseNFS) {
+            if (UseNFS) {
             //     args.add('-v "/nfs/apps/Xilinx":"/opt/Xilinx":ro')
             //     args.add('-v "/nfs/apps/resources/dot_Xilinx":"/root/.Xilinxro":ro')
-            // }
+            }
             else {
                     args.add('-v "/opt/Xilinx":"/opt/Xilinx":ro')
                     // args.add('-v "/root/.Xilinx":"/root/.Xilinxro":ro')
