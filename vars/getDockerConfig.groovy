@@ -2,7 +2,8 @@
 def call(java.util.ArrayList listOfResources, matlabHSPro=true, UseNFS=false) {
     assert listOfResources instanceof java.util.List
 
-    args = ['--privileged','-u root']
+    // args = ['--privileged','-u root']
+    args = ['--privileged']
 
     for (i = 0; i < listOfResources.size(); i++) {
         if (listOfResources[i].equalsIgnoreCase( 'MATLAB' )) {
