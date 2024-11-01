@@ -18,7 +18,7 @@ def call(java.util.ArrayList listOfResources, matlabHSPro=true, UseNFS=false) {
             }
             else {
                     args.add('-v "/opt/MATLAB":"/opt/MATLAB":ro')
-                    args.add('-v "/home/tcollins/.matlab":"/root/.matlabro":ro')
+                    // args.add('-v "/home/tcollins/.matlab":"/root/.matlabro":ro')
                     // if (matlabHSPro)
                     //     args.add('-v "/mlhsp":"/mlhsp":ro')
                     // else
