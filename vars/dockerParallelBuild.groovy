@@ -51,6 +51,9 @@ def call(branchNames, dockerHost, dockerArgs, dockerstages) {
                     docker.image('tfcollins/hdl-ci:latest').inside(dockerArgs) {
                         // sh 'chmod +x /usr/local/bin/docker-entrypoint.sh'
                         // sh '/usr/local/bin/docker-entrypoint.sh'
+
+                        def nodeName = env.NODE_NAME
+                        println "Running on ${nodeName}"
                         dockerstages(bn)
                     }
                     cleanWs()
