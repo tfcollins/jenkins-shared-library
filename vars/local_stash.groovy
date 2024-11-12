@@ -7,7 +7,9 @@ def call(name, targetDir="/jstorage") {
     // Replace / with - in branch name
     def branchName = BRANCH_NAME.replaceAll("/", "-")
 
-    if (!fileExists(targetDir)) {
+    // Check if targetDir folder exists
+    def directory = new File(directoryPath)
+    if (!(directory.exists() && directory.isDirectory())) {
         error "Cache directory does not exist"
     }
 
