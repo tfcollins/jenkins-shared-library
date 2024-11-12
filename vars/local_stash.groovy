@@ -8,8 +8,8 @@ def call(name, targetDir="/jstorage") {
     def branchName = BRANCH_NAME.replaceAll("/", "-")
 
     // Check if targetDir folder exists
-    def directory = new File(targetDir)
-    if (!(directory.exists() && directory.isDirectory())) {
+    def directoryExists = sh script: "ls -d ${targetDir}", returnStatus: true
+    if (directoryExists != 0) {
         error "Cache directory does not exist"
     }
 
