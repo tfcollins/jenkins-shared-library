@@ -1,4 +1,4 @@
-def call(name, targetDir="/jstorage") {
+def call(name, targetDir="/jstorage", inDocker=true) {
 
     // Get Jenkins job number and 
     def buildNumber = env.BUILD_NUMBER
@@ -13,6 +13,10 @@ def call(name, targetDir="/jstorage") {
         error "Cache directory does not exist"
     }
 
+    if (! inDocker) {
+        targetDir = "/home/tcollins/jstorage"
+    }
+
     // unstash file
     def cacheName = "cache-${name}-${branchName}-${buildNumber}.tar.gz"
     println "Unstashing cache file: ${cacheName}"
@@ -21,5 +25,5 @@ def call(name, targetDir="/jstorage") {
     if (fileExists != 0) {
         error "Cache file does not exist"
     }
-    sh 'tar -xvf  "/jstorage/' + cacheName + '" -C .'
+    sh 'tar -xvf  "' + targetDir + '/' + cacheName + '" -C .'
 }
