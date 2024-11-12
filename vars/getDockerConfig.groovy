@@ -45,7 +45,7 @@ def call(java.util.ArrayList listOfResources, matlabHSPro=true, UseNFS=false) {
             args.add('--init')
         }
         else if (listOfResources[i].equalsIgnoreCase( 'Internal' )) {
-            args.add("-v /home/tcollins/jstorage:/jstorage")
+            args.add('-v "/home/tcollins/jstorage:/jstorage"')
         }
         else {
             args.add(listOfResources[i])
