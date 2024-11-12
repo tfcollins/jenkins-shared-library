@@ -16,7 +16,9 @@ def call(name, targetDir="/jstorage") {
     // unstash file
     def cacheName = "cache-${name}-${branchName}-${buildNumber}.tar.gz"
     println "Unstashing cache file: ${cacheName}"
-    if (!fileExists("/jstorage/" + cacheName)) {
+    // Check if cache file exists
+    def fileExists = sh script: "ls -d ${targetDir}/${cacheName}", returnStatus: true
+    if (fileExists != 0) {
         error "Cache file does not exist"
     }
     sh 'tar -xvf  "/jstorage/' + cacheName + '" -C .'
