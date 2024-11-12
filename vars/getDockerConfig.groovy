@@ -44,6 +44,9 @@ def call(java.util.ArrayList listOfResources, matlabHSPro=true, UseNFS=false) {
             // https://stackoverflow.com/questions/55733058/vivado-synthesis-hangs-in-docker-container-spawned-by-jenkins
             args.add('--init')
         }
+        else if (listOfResources[i].equalsIgnoreCase( 'Internal' )) {
+            args.add("-v /home/tcollins/jstorage:/jstorage")
+        }
         else {
             args.add(listOfResources[i])
         }
