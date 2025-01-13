@@ -57,6 +57,8 @@ def call(variant, IIO_ENABLED, PACKAGE_ENABLED, PYPACKAGE_ENABLED, ISARM, DOC_EN
                         // Move Helper scripts to API folders
                         sh 'cp build_scripts/* $API/'
                         dir(API) {
+                            sh 'git config --global --add safe.directory "*"'
+                            sh 'git config --global --add safe.directory "/scratch/*"'
                             stage('Install dependencies') {
                                 sh 'chmod +x run_preinstall.sh && ./run_preinstall.sh'
                             }
