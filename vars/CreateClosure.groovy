@@ -20,7 +20,7 @@ def call(variant, IIO_ENABLED, PACKAGE_ENABLED, PYPACKAGE_ENABLED, ISARM, DOC_EN
         INSIDE = '-u root'
     }
 
-    return { node('docker && vm2') {
+    return { node('docker') {
             sh 'hostname'
             docker.image(IMAGE).inside(INSIDE) {
                 withEnv(['OS=' + OS, 'OS_VERSION=' + OS_VERSION, 'IIO=' + IIO,
