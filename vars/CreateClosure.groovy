@@ -23,6 +23,7 @@ def call(variant, IIO_ENABLED, PACKAGE_ENABLED, PYPACKAGE_ENABLED, ISARM, DOC_EN
     return { node('docker') {
             sh 'hostname'
             docker.image(IMAGE).inside(INSIDE) {
+                ws(OS+'_'+OS_VERSION+'_'+ARCH+'_'+API){
                 withEnv(['OS=' + OS, 'OS_VERSION=' + OS_VERSION, 'IIO=' + IIO,
                          'TEST=' + TEST, 'PACKAGE=' + PACKAGE, 'PYPACKAGE=' + PYPACKAGE,
                          'DOC=' + DOC, 'ARCH=' + ARCH, 'IMAGE=' + IMAGE, 'API=' + API]) {
@@ -88,6 +89,7 @@ def call(variant, IIO_ENABLED, PACKAGE_ENABLED, PYPACKAGE_ENABLED, ISARM, DOC_EN
                         cleanWs()
                     }
                          }
+            }
             }
     }
 }
