@@ -20,20 +20,26 @@ def call(variant, IIO_ENABLED, PACKAGE_ENABLED, PYPACKAGE_ENABLED, ISARM, DOC_EN
         INSIDE = '-u root'
     }
 
-    return { node('docker') {
+    return { node('baremetal') {
             sh 'hostname'
-            docker.image(IMAGE).inside(INSIDE) {
-                ws(OS+'_'+OS_VERSION+'_'+ARCH+'_'+API){
+            def DOCKER_INSIDE = INSIDE;
+            println('INSIDE: '+DOCKER_INSIDE)
+            println('IMAGE: '+IMAGE)
+            sh 'docker run '+DOCKER_INSIDE+' --rm -t '+IMAGE+' uname -m'
+            cleanWs();
+            docker.image(IMAGE).inside(DOCKER_INSIDE) {
                 withEnv(['OS=' + OS, 'OS_VERSION=' + OS_VERSION, 'IIO=' + IIO,
                          'TEST=' + TEST, 'PACKAGE=' + PACKAGE, 'PYPACKAGE=' + PYPACKAGE,
                          'DOC=' + DOC, 'ARCH=' + ARCH, 'IMAGE=' + IMAGE, 'API=' + API]) {
-                    try {
                         stage('Checkout') {
                             if (OS=='fedora') {
                                 sh 'yum install -y git'
                             }
                             if (OS=='debian') {
-                                sh 'apt update'
+                                sh 'rm /var/lib/dpkg/info/libc-bin.*'
+                                sh 'apt-get clean'
+                                sh 'apt-get update'
+                                sh 'apt-get install -y libc-bin'
                                 sh 'apt install -y git'
                             }
                             checkout([
@@ -47,7 +53,9 @@ def call(variant, IIO_ENABLED, PACKAGE_ENABLED, PYPACKAGE_ENABLED, ISARM, DOC_EN
                                     recursiveSubmodules: true,
                                     reference: '',
                                     trackingSubmodules: false
-                                ]],
+                                ],
+                                [$class: 'CloneOption', timeout: 120]
+                                ],
                                 submoduleCfg: [],
                                 userRemoteConfigs: scm.userRemoteConfigs
                             ])
@@ -55,9 +63,8 @@ def call(variant, IIO_ENABLED, PACKAGE_ENABLED, PYPACKAGE_ENABLED, ISARM, DOC_EN
                         if (DOC == 'true') {
                             unstash 'table'
                         }
-                        // Move Helper scripts to API folders
-                        sh 'cp build_scripts/* $API/'
                         dir(API) {
+                            sh 'cp -v ../build_scripts/* .'
                             sh 'git config --global --add safe.directory "*"'
                             sh 'git config --global --add safe.directory "/scratch/*"'
                             stage('Install dependencies') {
@@ -85,11 +92,6 @@ def call(variant, IIO_ENABLED, PACKAGE_ENABLED, PYPACKAGE_ENABLED, ISARM, DOC_EN
                         archiveArtifacts artifacts: '_packages/**'
                         stash name: 'packages' + OS + '_' + OS_VERSION + '_' + ARCH, includes: '_packages/**'
                     }
-                    finally {
-                        cleanWs()
-                    }
-                         }
-            }
             }
     }
 }
