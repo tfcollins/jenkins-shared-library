@@ -1,4 +1,4 @@
-def call(name, targetDir="/jstorage") {
+def call(name, targetDir="/jstorage", inDocker=true) {
 
     // Get Jenkins job number and 
     def buildNumber = env.BUILD_NUMBER
@@ -7,6 +7,10 @@ def call(name, targetDir="/jstorage") {
     // Replace / with - in branch name
     def branchName = BRANCH_NAME.replaceAll("/", "-")
 
+    if (! inDocker) {
+        targetDir = "/home/tcollins/jstorage"
+    }
+    
     // Check if targetDir folder exists
     def directoryExists = sh script: "ls -d ${targetDir}", returnStatus: true
     if (directoryExists != 0) {
@@ -16,6 +20,7 @@ def call(name, targetDir="/jstorage") {
     // Create stash file
     def cacheName = "cache-${name}-${branchName}-${buildNumber}.tar.gz"
     println "Stashing cache file: ${cacheName}"
-    sh 'tar -czvf "/jstorage/' + cacheName + '" .'
+    //sh 'tar -czvf "/jstorage/' + cacheName + '" .'
+    sh 'tar -czvf "'+targetDir+'/' + cacheName + '" .'
 
 }
